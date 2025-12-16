@@ -10,6 +10,7 @@ on:
 env:
   TF_VERSION: '1.5.0'
   AWS_REGION: 'us-east-1'
+  AWS_ROLE_ARN: 'arn:aws:iam::995761092254:role/GithubConnect'
 
 permissions:
   id-token: write
@@ -63,7 +64,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::995761092254:role/GithubConnect
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Terraform Init

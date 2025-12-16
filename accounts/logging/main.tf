@@ -339,7 +339,7 @@ module "compliance_baseline" {
   account_id = var.logging_account_id
 }
 
-#OpenID Connect Iam Role Creation for child accouts
+# OpenID Connect Iam Role Creation for child accounts
 
 resource "aws_iam_role" "terraform_execution_role" {
   name = "TerraformExecutionRole"
