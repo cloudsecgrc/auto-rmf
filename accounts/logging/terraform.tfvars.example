@@ -1,0 +1,9 @@
+# Logging Account Configuration
+
+aws_region            = "xx-xxxx-x"
+management_account_id = "xxxxxxxxxxxx"
+security_account_id   = "xxxxxxxxxxxx"
+logging_account_id    = "xxxxxxxxxxxx"
+workload_account_id   = "xxxxxxxxxxxx"
+
+assume_role_arn = "arn:aws:iam::<logging_account_id>:role/<rolename>"

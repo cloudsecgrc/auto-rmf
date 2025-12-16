@@ -1,0 +1,29 @@
+Control_ID,Control_Name,AWS_Service,Config_Rule_Name,Implementation_Method,Evidence_Location
+AC-2,Account Management,IAM,iam-root-access-key-check,AWS Config Rule,s3://auto-rmf-evidence-collection/
+AC-2,Account Management,IAM,root-account-mfa-enabled,AWS Config Rule,s3://auto-rmf-evidence-collection/
+AC-3,Access Enforcement,S3,s3-bucket-public-read-prohibited,AWS Config Rule,s3://auto-rmf-evidence-collection/
+AC-3,Access Enforcement,S3,s3-bucket-public-write-prohibited,AWS Config Rule,s3://auto-rmf-evidence-collection/
+AC-4,Information Flow Enforcement,EC2,restricted-ssh,AWS Config Rule,s3://auto-rmf-evidence-collection/
+AC-4,Information Flow Enforcement,EC2,restricted-common-ports,AWS Config Rule,s3://auto-rmf-evidence-collection/
+AC-6,Least Privilege,IAM,iam-policy-no-statements-with-admin-access,AWS Config Rule,s3://auto-rmf-evidence-collection/
+AU-2,Audit Events,CloudTrail,cloud-trail-enabled,AWS Config Rule,s3://auto-rmf-cloudtrail-logs/
+AU-2,Audit Events,CloudTrail,cloud-trail-log-file-validation-enabled,AWS Config Rule,s3://auto-rmf-cloudtrail-logs/
+AU-9,Protection of Audit Information,CloudTrail,cloud-trail-encryption-enabled,AWS Config Rule,s3://auto-rmf-cloudtrail-logs/
+AU-12,Audit Generation,S3,s3-bucket-logging-enabled,AWS Config Rule,s3://auto-rmf-evidence-collection/
+CM-2,Baseline Configuration,Config,config-enabled,AWS Config Rule,s3://auto-rmf-config-snapshots/
+CM-6,Configuration Settings,Security Hub,securityhub-enabled,AWS Config Rule,s3://auto-rmf-evidence-collection/
+CM-7,Least Functionality,IAM,iam-user-unused-credentials-check,AWS Config Rule,s3://auto-rmf-evidence-collection/
+CM-8,Information System Component Inventory,Config,required-tags,AWS Config Rule,s3://auto-rmf-config-snapshots/
+IA-2,Identification and Authentication,IAM,iam-password-policy,AWS Config Rule,s3://auto-rmf-evidence-collection/
+IA-4,Identifier Management,RDS,rds-storage-encrypted,AWS Config Rule,s3://auto-rmf-evidence-collection/
+IA-5,Authenticator Management,IAM,access-keys-rotated,AWS Config Rule,s3://auto-rmf-evidence-collection/
+SC-7,Boundary Protection,VPC,vpc-flow-logs-enabled,AWS Config Rule,s3://auto-rmf-vpc-flow-logs/
+SC-7(5),Deny by Default,EC2,vpc-sg-open-only-to-authorized-ports,AWS Config Rule,s3://auto-rmf-evidence-collection/
+SC-8,Transmission Confidentiality,ELB,alb-http-to-https-redirection-check,AWS Config Rule,s3://auto-rmf-evidence-collection/
+SC-8,Transmission Confidentiality,ELB,elb-tls-https-listeners-only,AWS Config Rule,s3://auto-rmf-evidence-collection/
+SC-12,Cryptographic Key Management,KMS,cmk-backing-key-rotation-enabled,AWS Config Rule,s3://auto-rmf-evidence-collection/
+SC-13,Cryptographic Protection,S3,s3-bucket-server-side-encryption-enabled,AWS Config Rule,s3://auto-rmf-evidence-collection/
+SC-28,Protection of Information at Rest,EBS,encrypted-volumes,AWS Config Rule,s3://auto-rmf-evidence-collection/
+SC-28,Protection of Information at Rest,EBS,ec2-ebs-encryption-by-default,AWS Config Rule,s3://auto-rmf-evidence-collection/
+SI-2,Flaw Remediation,SSM,ec2-instance-managed-by-systems-manager,AWS Config Rule,s3://auto-rmf-evidence-collection/
+SI-4,Information System Monitoring,GuardDuty,guardduty-enabled-centralized,AWS Config Rule,s3://auto-rmf-evidence-collection/
