@@ -10,7 +10,7 @@
         <mxCell id="XZHTmi36bkxzOhchVn5A-7" parent="XZHTmi36bkxzOhchVn5A-1" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.internet_3;fillColor=#D2D3D3;gradientColor=none;" value="&lt;b&gt;Internet&lt;/b&gt;" vertex="1">
           <mxGeometry height="48" width="73" x="11" y="478" as="geometry" />
         </mxCell>
-        <mxCell id="XZHTmi36bkxzOhchVn5A-2" parent="1" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_region;strokeColor=#0000FF;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;dashed=1;" value="us-east-1" vertex="1">
+        <mxCell id="XZHTmi36bkxzOhchVn5A-2" parent="1" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_region;strokeColor=#0000FF;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;dashed=1;labelBorderColor=default;" value="us-east-1" vertex="1">
           <mxGeometry height="651" width="829" x="174" y="100" as="geometry" />
         </mxCell>
         <mxCell id="XZHTmi36bkxzOhchVn5A-4" parent="XZHTmi36bkxzOhchVn5A-2" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=0;container=1;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_vpc2;strokeColor=#8C4FFF;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#AAB7B8;dashed=0;" value="&lt;b&gt;VPC (10.0.0.0/16)&lt;/b&gt;" vertex="1">
@@ -100,6 +100,12 @@
         </mxCell>
         <mxCell id="XZHTmi36bkxzOhchVn5A-99" parent="XZHTmi36bkxzOhchVn5A-4" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;span style=&quot;color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: nowrap; background-color: rgb(236, 236, 236); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;&quot;&gt;Security Group&lt;/span&gt;" vertex="1">
           <mxGeometry height="35" width="79" x="297.5" y="185" as="geometry" />
+        </mxCell>
+        <mxCell id="XZHTmi36bkxzOhchVn5A-102" parent="XZHTmi36bkxzOhchVn5A-4" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;labelBorderColor=default;" value="&lt;b&gt;NACL&lt;/b&gt;" vertex="1">
+          <mxGeometry height="20" width="40" x="229" y="202" as="geometry" />
+        </mxCell>
+        <mxCell id="XZHTmi36bkxzOhchVn5A-103" parent="XZHTmi36bkxzOhchVn5A-4" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;labelBorderColor=default;" value="&lt;b&gt;NACL&lt;/b&gt;" vertex="1">
+          <mxGeometry height="20" width="40" x="406" y="202" as="geometry" />
         </mxCell>
         <mxCell id="XZHTmi36bkxzOhchVn5A-9" parent="XZHTmi36bkxzOhchVn5A-2" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=#232F3E;fillColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.internet_gateway;" value="&lt;b&gt;Internet&lt;/b&gt;&lt;div&gt;&lt;b&gt;Gateway&lt;/b&gt;&lt;/div&gt;" vertex="1">
           <mxGeometry height="60" width="60" x="16" y="304" as="geometry" />
