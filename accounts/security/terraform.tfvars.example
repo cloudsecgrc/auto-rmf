@@ -10,3 +10,5 @@ workload_account_id   = "xxxxxxxxxxxx"
 evidence_bucket_name = "xxxxxxxxxxxxxxxxxxxx"
 
 alert_email           = "youremail@email.com"
+
+oidc_role_name        = "xxxxxxxxxxxxxxxx"

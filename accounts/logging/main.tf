@@ -338,3 +338,24 @@ module "compliance_baseline" {
   aws_region = var.aws_region
   account_id = var.logging_account_id
 }
+
+#OpenID Connect Iam Role Creation for child accouts
+
+resource "aws_iam_role" "terraform_execution_role" {
+  name = "TerraformExecutionRole"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${var.management_account_id}:role/${var.oidc_role_name}"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+
+  
+}

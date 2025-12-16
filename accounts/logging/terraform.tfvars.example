@@ -7,3 +7,5 @@ logging_account_id    = "xxxxxxxxxxxx"
 workload_account_id   = "xxxxxxxxxxxx"
 
 assume_role_arn = "arn:aws:iam::<logging_account_id>:role/<rolename>"
+
+oidc_role_name        = "xxxxxxxxxxxxxxxx"

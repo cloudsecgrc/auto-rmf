@@ -34,3 +34,9 @@ variable "alert_email" {
   description = "Email address for security alerts"
   type        = string
 }
+
+
+variable "oidc_role_name" {
+  type        = string
+  description = "Name of the OIDC role in management"
+}

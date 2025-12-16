@@ -23,3 +23,9 @@ variable "workload_account_id" {
   description = "Workload account ID"
   type        = string
 }
+
+
+variable "oidc_role_name" {
+  type        = string
+  description = "Name of the OIDC role in management"
+}

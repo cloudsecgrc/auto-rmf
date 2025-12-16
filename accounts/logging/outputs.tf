@@ -37,3 +37,8 @@ output "config_aggregator_arn" {
   description = "Config aggregator ARN"
   value       = aws_config_configuration_aggregator.organization.arn
 }
+
+output "terraform_execution_role_arn" {
+  description = "ARN of the execution role for CI/CD"
+  value       = aws_iam_role.terraform_execution_role.arn
+}
