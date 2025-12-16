@@ -71,7 +71,7 @@
         <mxCell id="XZHTmi36bkxzOhchVn5A-47" parent="XZHTmi36bkxzOhchVn5A-45" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" value="0.0.0.0/0&amp;nbsp; &amp;nbsp; -&amp;nbsp; &amp;nbsp;IGW" vertex="1">
           <mxGeometry height="30" width="130" y="60" as="geometry" />
         </mxCell>
-        <mxCell id="XZHTmi36bkxzOhchVn5A-49" parent="XZHTmi36bkxzOhchVn5A-4" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="&amp;nbsp;Private Subnet&lt;div&gt;Route Table&lt;/div&gt;" vertex="1">
+        <mxCell id="XZHTmi36bkxzOhchVn5A-49" parent="XZHTmi36bkxzOhchVn5A-4" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="&amp;nbsp;Private Subnets&lt;div&gt;Route Table&lt;/div&gt;" vertex="1">
           <mxGeometry height="60" width="130" x="500" y="275" as="geometry" />
         </mxCell>
         <mxCell id="XZHTmi36bkxzOhchVn5A-50" parent="XZHTmi36bkxzOhchVn5A-49" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" value="10.0.0.0/16&amp;nbsp; -&amp;nbsp; Local" vertex="1">
