@@ -340,8 +340,7 @@ module "compliance_baseline" {
   account_id = var.security_account_id
 }
 
-# OpenID Connect Iam Role Creation for child accounts
-
+# OpenID Connect IAM Role Creation for child accounts
 resource "aws_iam_role" "terraform_execution_role" {
   name = "TerraformExecutionRole"
 
@@ -357,6 +356,9 @@ resource "aws_iam_role" "terraform_execution_role" {
       }
     ]
   })
+}
 
-  
+resource "aws_iam_role_policy_attachment" "terraform_execution_attach" {
+  role       = aws_iam_role.terraform_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
