@@ -101,6 +101,7 @@ Evidence automatically collected daily at 6 AM UTC via EventBridge cron trigger.
 **Restore State:** `aws s3 sync ./state-backup/ s3://auto-rmf-terraform-state` then verify with `terraform plan`
 
 **GitHub Actions Setup:** Create OIDC identity provider in AWS IAM and IAM role adding a trust relationship to your GitHub repo. Update `AWS_ROLE_ARN` in workflow `env:` section if using different role. CI/CD pipeline runs Terraform validation, security scanning (tfsec, Checkov), and automated deployment on merge to main.
+
 ---
 
 ## Tech Stack
