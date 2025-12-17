@@ -23,7 +23,7 @@
           <mxGeometry height="180" width="603" x="38" y="31" as="geometry" />
         </mxCell>
         <mxCell id="XZHTmi36bkxzOhchVn5A-16" parent="XZHTmi36bkxzOhchVn5A-4" style="sketch=0;outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_availability_zone;strokeColor=#FF8000;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#545B64;dashed=1;" value="&lt;div&gt;&lt;b&gt;AZ: us-east-1b&lt;/b&gt;&lt;/div&gt;" vertex="1">
-          <mxGeometry height="498" width="129" x="338" y="46" as="geometry" />
+          <mxGeometry height="498" width="123" x="338" y="46" as="geometry" />
         </mxCell>
         <mxCell id="XZHTmi36bkxzOhchVn5A-70" parent="XZHTmi36bkxzOhchVn5A-4" style="rounded=1;arcSize=10;dashed=1;strokeColor=#ff0000;fillColor=none;gradientColor=none;dashPattern=8 4;strokeWidth=2;verticalAlign=bottom;" value="   " vertex="1">
           <mxGeometry height="85" width="224" x="227" y="415" as="geometry" />
@@ -32,7 +32,7 @@
           <mxGeometry height="156" width="603" x="39" y="222" as="geometry" />
         </mxCell>
         <mxCell id="XZHTmi36bkxzOhchVn5A-15" parent="XZHTmi36bkxzOhchVn5A-4" style="sketch=0;outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=1;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_availability_zone;strokeColor=#FF8000;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#545B64;dashed=1;" value="AZ:&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(84, 91, 100), rgb(154, 160, 168));&quot;&gt;us-east-1a&lt;/span&gt;" vertex="1">
-          <mxGeometry height="498" width="131" x="197" y="46" as="geometry" />
+          <mxGeometry height="498" width="117" x="211" y="46" as="geometry" />
         </mxCell>
         <mxCell id="XZHTmi36bkxzOhchVn5A-67" parent="XZHTmi36bkxzOhchVn5A-4" style="rounded=1;arcSize=10;dashed=1;strokeColor=#ff0000;fillColor=none;gradientColor=none;dashPattern=8 4;strokeWidth=2;" value="" vertex="1">
           <mxGeometry height="84" width="226" x="224" y="258" as="geometry" />
@@ -134,8 +134,8 @@
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="250" y="405" />
-              <mxPoint x="214" y="405" />
-              <mxPoint x="214" y="568" />
+              <mxPoint x="200" y="405" />
+              <mxPoint x="200" y="568" />
               <mxPoint x="561" y="568" />
             </Array>
             <mxPoint x="251.5" y="556" as="sourcePoint" />
