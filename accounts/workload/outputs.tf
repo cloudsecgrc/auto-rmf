@@ -3,14 +3,19 @@ output "vpc_id" {
   value       = aws_vpc.main.id
 }
 
-output "public_subnet_id" {
-  description = "Public subnet ID"
-  value       = aws_subnet.public.id
+output "public_subnet_ids" {
+  description = "Public subnet IDs"
+  value       = [aws_subnet.public_1a.id, aws_subnet.public_1b.id]
 }
 
-output "private_subnet_id" {
-  description = "Private subnet ID"
-  value       = aws_subnet.private.id
+output "app_subnet_ids" {
+  description = "Application subnet IDs"
+  value       = [aws_subnet.app_1a.id, aws_subnet.app_1b.id]
+}
+
+output "database_subnet_ids" {
+  description = "Database subnet IDs"
+  value       = [aws_subnet.database_1a.id, aws_subnet.database_1b.id]
 }
 
 output "alb_dns_name" {
@@ -28,7 +33,17 @@ output "waf_web_acl_arn" {
   value       = aws_wafv2_web_acl.main.arn
 }
 
-output "terraform_execution_role_arn" {
-  description = "ARN of the execution role for CI/CD"
-  value       = aws_iam_role.terraform_execution_role.arn
+output "alb_security_group_id" {
+  description = "ALB Security Group ID"
+  value       = aws_security_group.alb.id
+}
+
+output "app_security_group_id" {
+  description = "Application Security Group ID"
+  value       = aws_security_group.app.id
+}
+
+output "database_security_group_id" {
+  description = "Database Security Group ID"
+  value       = aws_security_group.database.id
 }
