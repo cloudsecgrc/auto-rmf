@@ -32,13 +32,6 @@ variable "private_subnet_cidr" {
   default     = "10.0.2.0/24"
 }
 
-variable "domain_name" {
-  description = "Domain name for Route53 (optional)"
-  type        = string
-  default     = ""
-}
-
-
 variable "oidc_role_name" {
   type        = string
   description = "Name of the OIDC role in management"
