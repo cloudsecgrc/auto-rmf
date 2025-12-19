@@ -1,13 +1,13 @@
 terraform {
   required_version = ">= 1.5.0"
-  
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
   }
-  
+
   backend "s3" {
     bucket         = "auto-rmf-terraform-state"
     key            = "security/terraform.tfstate"
@@ -19,7 +19,7 @@ terraform {
 
 provider "aws" {
   region = var.aws_region
-  
+
   default_tags {
     tags = {
       Project     = "AUTO-RMF"
@@ -33,19 +33,19 @@ provider "aws" {
 # SNS topics for security alerts
 resource "aws_sns_topic" "security_hub_critical" {
   name = "auto-rmf-securityhub-critical"
-  
+
   kms_master_key_id = aws_kms_key.sns.id
 }
 
 resource "aws_sns_topic" "guardduty_high" {
   name = "auto-rmf-guardduty-high"
-  
+
   kms_master_key_id = aws_kms_key.sns.id
 }
 
 resource "aws_sns_topic" "config_noncompliant" {
   name = "auto-rmf-config-noncompliant"
-  
+
   kms_master_key_id = aws_kms_key.sns.id
 }
 
@@ -73,7 +73,7 @@ resource "aws_kms_key" "sns" {
   description             = "KMS key for AUTO-RMF SNS topics"
   deletion_window_in_days = 30
   enable_key_rotation     = true
-  
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -111,7 +111,7 @@ resource "aws_kms_alias" "sns" {
 resource "aws_cloudwatch_event_rule" "security_hub_critical" {
   name        = "auto-rmf-securityhub-critical"
   description = "Capture Security Hub critical findings"
-  
+
   event_pattern = jsonencode({
     source      = ["aws.securityhub"]
     detail-type = ["Security Hub Findings - Imported"]
@@ -134,7 +134,7 @@ resource "aws_cloudwatch_event_target" "security_hub_critical" {
 resource "aws_cloudwatch_event_rule" "guardduty_high" {
   name        = "auto-rmf-guardduty-high"
   description = "Capture GuardDuty high severity findings"
-  
+
   event_pattern = jsonencode({
     source      = ["aws.guardduty"]
     detail-type = ["GuardDuty Finding"]
@@ -155,7 +155,7 @@ resource "aws_cloudwatch_event_target" "guardduty_high" {
 resource "aws_cloudwatch_event_rule" "config_noncompliant" {
   name        = "auto-rmf-config-noncompliant"
   description = "Capture Config non-compliant resources"
-  
+
   event_pattern = jsonencode({
     source      = ["aws.config"]
     detail-type = ["Config Rules Compliance Change"]
@@ -176,7 +176,7 @@ resource "aws_cloudwatch_event_target" "config_noncompliant" {
 # SNS topic policies to allow EventBridge
 resource "aws_sns_topic_policy" "security_hub_critical" {
   arn = aws_sns_topic.security_hub_critical.arn
-  
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -194,7 +194,7 @@ resource "aws_sns_topic_policy" "security_hub_critical" {
 
 resource "aws_sns_topic_policy" "guardduty_high" {
   arn = aws_sns_topic.guardduty_high.arn
-  
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -212,7 +212,7 @@ resource "aws_sns_topic_policy" "guardduty_high" {
 
 resource "aws_sns_topic_policy" "config_noncompliant" {
   arn = aws_sns_topic.config_noncompliant.arn
-  
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -232,15 +232,15 @@ resource "aws_sns_topic_policy" "config_noncompliant" {
 resource "aws_lambda_function" "evidence_collector" {
   filename         = "${path.module}/lambda/evidence_collector.zip"
   function_name    = "auto-rmf-evidence-collector"
-  role            = aws_iam_role.lambda_evidence.arn
-  handler         = "evidence_collector.lambda_handler"
+  role             = aws_iam_role.lambda_evidence.arn
+  handler          = "evidence_collector.lambda_handler"
   source_code_hash = filebase64sha256("${path.module}/lambda/evidence_collector.zip")
-  runtime         = "python3.11"
-  timeout         = 300
-  
+  runtime          = "python3.11"
+  timeout          = 300
+
   environment {
     variables = {
-      EVIDENCE_BUCKET = var.evidence_bucket_name
+      EVIDENCE_BUCKET     = var.evidence_bucket_name
       SECURITY_ACCOUNT_ID = var.security_account_id
     }
   }
@@ -249,7 +249,7 @@ resource "aws_lambda_function" "evidence_collector" {
 # Lambda IAM role
 resource "aws_iam_role" "lambda_evidence" {
   name = "LambdaEvidenceCollectorRole"
-  
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -267,7 +267,7 @@ resource "aws_iam_role" "lambda_evidence" {
 resource "aws_iam_role_policy" "lambda_evidence" {
   name = "LambdaEvidenceCollectorPolicy"
   role = aws_iam_role.lambda_evidence.id
-  
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -307,7 +307,7 @@ resource "aws_iam_role_policy" "lambda_evidence" {
 resource "aws_cloudwatch_event_rule" "evidence_collection" {
   name                = "auto-rmf-evidence-collection"
   description         = "Trigger evidence collection daily"
-  schedule_expression = "cron(0 6 * * ? *)"  # Daily at 6 AM UTC
+  schedule_expression = "cron(0 6 * * ? *)" # Daily at 6 AM UTC
 }
 
 resource "aws_cloudwatch_event_target" "evidence_collection" {
@@ -327,7 +327,7 @@ resource "aws_lambda_permission" "evidence_collection" {
 # Security services module
 module "security_services" {
   source = "../../modules/security-services"
-  
+
   aws_region = var.aws_region
   account_id = var.security_account_id
 }
@@ -335,7 +335,7 @@ module "security_services" {
 # Compliance baseline module
 module "compliance_baseline" {
   source = "../../modules/compliance-baseline"
-  
+
   aws_region = var.aws_region
   account_id = var.security_account_id
 }
