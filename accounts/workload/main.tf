@@ -1,13 +1,13 @@
 terraform {
   required_version = ">= 1.5.0"
-  
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
   }
-  
+
   backend "s3" {
     bucket         = "auto-rmf-terraform-state"
     key            = "workload/terraform.tfstate"
@@ -19,7 +19,7 @@ terraform {
 
 provider "aws" {
   region = var.aws_region
-  
+
   default_tags {
     tags = {
       Project     = "AUTO-RMF"
@@ -38,7 +38,7 @@ resource "aws_vpc" "main" {
   cidr_block           = var.vpc_cidr
   enable_dns_hostnames = true
   enable_dns_support   = true
-  
+
   tags = {
     Name = "auto-rmf-vpc"
   }
@@ -47,7 +47,7 @@ resource "aws_vpc" "main" {
 # Internet Gateway
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
-  
+
   tags = {
     Name = "auto-rmf-igw"
   }
@@ -62,7 +62,7 @@ resource "aws_subnet" "public_1a" {
   cidr_block              = "10.0.1.0/24"
   availability_zone       = "${var.aws_region}a"
   map_public_ip_on_launch = true
-  
+
   tags = {
     Name = "auto-rmf-public-subnet-1a"
     Tier = "Public"
@@ -74,7 +74,7 @@ resource "aws_subnet" "public_1b" {
   cidr_block              = "10.0.2.0/24"
   availability_zone       = "${var.aws_region}b"
   map_public_ip_on_launch = true
-  
+
   tags = {
     Name = "auto-rmf-public-subnet-1b"
     Tier = "Public"
@@ -89,7 +89,7 @@ resource "aws_subnet" "app_1a" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.3.0/24"
   availability_zone = "${var.aws_region}a"
-  
+
   tags = {
     Name = "auto-rmf-app-subnet-1a"
     Tier = "Application"
@@ -100,7 +100,7 @@ resource "aws_subnet" "app_1b" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.4.0/24"
   availability_zone = "${var.aws_region}b"
-  
+
   tags = {
     Name = "auto-rmf-app-subnet-1b"
     Tier = "Application"
@@ -115,7 +115,7 @@ resource "aws_subnet" "database_1a" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.5.0/24"
   availability_zone = "${var.aws_region}a"
-  
+
   tags = {
     Name = "auto-rmf-database-subnet-1a"
     Tier = "Database"
@@ -126,7 +126,7 @@ resource "aws_subnet" "database_1b" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.6.0/24"
   availability_zone = "${var.aws_region}b"
-  
+
   tags = {
     Name = "auto-rmf-database-subnet-1b"
     Tier = "Database"
@@ -140,12 +140,12 @@ resource "aws_subnet" "database_1b" {
 # Public route table
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
-  
+
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.main.id
   }
-  
+
   tags = {
     Name = "auto-rmf-public-rt"
   }
@@ -164,7 +164,7 @@ resource "aws_route_table_association" "public_1b" {
 # Private route table (No internet routing)
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
-  
+
   tags = {
     Name = "auto-rmf-private-rt"
   }
@@ -201,7 +201,7 @@ resource "aws_network_acl" "public" {
     aws_subnet.public_1a.id,
     aws_subnet.public_1b.id
   ]
-  
+
   ingress {
     protocol   = "tcp"
     rule_no    = 100
@@ -210,7 +210,7 @@ resource "aws_network_acl" "public" {
     from_port  = 443
     to_port    = 443
   }
-  
+
   ingress {
     protocol   = "tcp"
     rule_no    = 110
@@ -219,7 +219,7 @@ resource "aws_network_acl" "public" {
     from_port  = 80
     to_port    = 80
   }
-  
+
   ingress {
     protocol   = "tcp"
     rule_no    = 120
@@ -228,7 +228,7 @@ resource "aws_network_acl" "public" {
     from_port  = 1024
     to_port    = 65535
   }
-  
+
   egress {
     protocol   = -1
     rule_no    = 100
@@ -237,7 +237,7 @@ resource "aws_network_acl" "public" {
     from_port  = 0
     to_port    = 0
   }
-  
+
   tags = {
     Name = "auto-rmf-public-nacl"
   }
@@ -250,7 +250,7 @@ resource "aws_network_acl" "app" {
     aws_subnet.app_1a.id,
     aws_subnet.app_1b.id
   ]
-  
+
   ingress {
     protocol   = "tcp"
     rule_no    = 100
@@ -259,7 +259,7 @@ resource "aws_network_acl" "app" {
     from_port  = 80
     to_port    = 80
   }
-  
+
   ingress {
     protocol   = "tcp"
     rule_no    = 110
@@ -268,7 +268,7 @@ resource "aws_network_acl" "app" {
     from_port  = 1024
     to_port    = 65535
   }
-  
+
   egress {
     protocol   = -1
     rule_no    = 100
@@ -277,7 +277,7 @@ resource "aws_network_acl" "app" {
     from_port  = 0
     to_port    = 0
   }
-  
+
   tags = {
     Name = "auto-rmf-app-nacl"
   }
@@ -290,7 +290,7 @@ resource "aws_network_acl" "database" {
     aws_subnet.database_1a.id,
     aws_subnet.database_1b.id
   ]
-  
+
   ingress {
     protocol   = "tcp"
     rule_no    = 100
@@ -299,7 +299,7 @@ resource "aws_network_acl" "database" {
     from_port  = 3306
     to_port    = 3306
   }
-  
+
   ingress {
     protocol   = "tcp"
     rule_no    = 110
@@ -308,7 +308,7 @@ resource "aws_network_acl" "database" {
     from_port  = 3306
     to_port    = 3306
   }
-  
+
   ingress {
     protocol   = "tcp"
     rule_no    = 120
@@ -317,7 +317,7 @@ resource "aws_network_acl" "database" {
     from_port  = 1024
     to_port    = 65535
   }
-  
+
   egress {
     protocol   = -1
     rule_no    = 100
@@ -326,7 +326,7 @@ resource "aws_network_acl" "database" {
     from_port  = 0
     to_port    = 0
   }
-  
+
   tags = {
     Name = "auto-rmf-database-nacl"
   }
@@ -341,7 +341,7 @@ resource "aws_security_group" "alb" {
   name        = "auto-rmf-alb-sg"
   description = "Security group for ALB"
   vpc_id      = aws_vpc.main.id
-  
+
   ingress {
     description = "HTTPS from Internet"
     from_port   = 443
@@ -349,7 +349,7 @@ resource "aws_security_group" "alb" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
   ingress {
     description = "HTTP from Internet"
     from_port   = 80
@@ -357,7 +357,7 @@ resource "aws_security_group" "alb" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
   egress {
     description = "All outbound"
     from_port   = 0
@@ -365,7 +365,7 @@ resource "aws_security_group" "alb" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
   tags = {
     Name = "auto-rmf-alb-sg"
   }
@@ -376,7 +376,7 @@ resource "aws_security_group" "app" {
   name        = "auto-rmf-app-sg"
   description = "Security group for application tier"
   vpc_id      = aws_vpc.main.id
-  
+
   ingress {
     description     = "HTTP from ALB only"
     from_port       = 80
@@ -384,7 +384,7 @@ resource "aws_security_group" "app" {
     protocol        = "tcp"
     security_groups = [aws_security_group.alb.id]
   }
-  
+
   egress {
     description = "All outbound"
     from_port   = 0
@@ -392,7 +392,7 @@ resource "aws_security_group" "app" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
   tags = {
     Name = "auto-rmf-app-sg"
   }
@@ -403,7 +403,7 @@ resource "aws_security_group" "database" {
   name        = "auto-rmf-database-sg"
   description = "Security group for database tier"
   vpc_id      = aws_vpc.main.id
-  
+
   ingress {
     description     = "MySQL from App tier only"
     from_port       = 3306
@@ -411,7 +411,7 @@ resource "aws_security_group" "database" {
     protocol        = "tcp"
     security_groups = [aws_security_group.app.id]
   }
-  
+
   egress {
     description = "All outbound"
     from_port   = 0
@@ -419,7 +419,7 @@ resource "aws_security_group" "database" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
   tags = {
     Name = "auto-rmf-database-sg"
   }
@@ -434,13 +434,13 @@ resource "aws_lb" "main" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]
-  subnets            = [
+  subnets = [
     aws_subnet.public_1a.id,
     aws_subnet.public_1b.id
   ]
-  
+
   enable_deletion_protection = false
-  
+
   tags = {
     Name = "auto-rmf-alb"
   }
@@ -453,55 +453,55 @@ resource "aws_lb" "main" {
 resource "aws_wafv2_web_acl" "main" {
   name  = "auto-rmf-web-acl"
   scope = "REGIONAL"
-  
+
   default_action {
     allow {}
   }
-  
+
   rule {
     name     = "RateLimitRule"
     priority = 1
-    
+
     action {
       block {}
     }
-    
+
     statement {
       rate_based_statement {
         limit              = 2000
         aggregate_key_type = "IP"
       }
     }
-    
+
     visibility_config {
       cloudwatch_metrics_enabled = true
       metric_name                = "RateLimitRule"
       sampled_requests_enabled   = true
     }
   }
-  
+
   rule {
     name     = "AWSManagedRulesCommonRuleSet"
     priority = 2
-    
+
     override_action {
       none {}
     }
-    
+
     statement {
       managed_rule_group_statement {
         name        = "AWSManagedRulesCommonRuleSet"
         vendor_name = "AWS"
       }
     }
-    
+
     visibility_config {
       cloudwatch_metrics_enabled = true
       metric_name                = "AWSManagedRulesCommonRuleSetMetric"
       sampled_requests_enabled   = true
     }
   }
-  
+
   visibility_config {
     cloudwatch_metrics_enabled = true
     metric_name                = "auto-rmf-web-acl"
@@ -527,7 +527,7 @@ resource "aws_flow_log" "main" {
 
 resource "aws_iam_role" "flow_logs" {
   name = "VPCFlowLogsRole"
-  
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -545,7 +545,7 @@ resource "aws_iam_role" "flow_logs" {
 resource "aws_iam_role_policy" "flow_logs" {
   name = "VPCFlowLogsPolicy"
   role = aws_iam_role.flow_logs.id
-  
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -567,7 +567,7 @@ resource "aws_iam_role_policy" "flow_logs" {
 # Security services module
 module "security_services" {
   source = "../../modules/security-services"
-  
+
   aws_region = var.aws_region
   account_id = var.workload_account_id
 }
@@ -575,20 +575,20 @@ module "security_services" {
 # Compliance baseline module
 module "compliance_baseline" {
   source = "../../modules/compliance-baseline"
-  
+
   aws_region = var.aws_region
   account_id = var.workload_account_id
 }
 terraform {
   required_version = ">= 1.5.0"
-  
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
   }
-  
+
   backend "s3" {
     bucket         = "auto-rmf-terraform-state"
     key            = "workload/terraform.tfstate"
@@ -600,7 +600,7 @@ terraform {
 
 provider "aws" {
   region = var.aws_region
-  
+
   default_tags {
     tags = {
       Project     = "AUTO-RMF"
@@ -616,7 +616,7 @@ resource "aws_vpc" "main" {
   cidr_block           = var.vpc_cidr
   enable_dns_hostnames = true
   enable_dns_support   = true
-  
+
   tags = {
     Name = "auto-rmf-vpc"
   }
@@ -625,7 +625,7 @@ resource "aws_vpc" "main" {
 # Internet Gateway
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
-  
+
   tags = {
     Name = "auto-rmf-igw"
   }
@@ -637,7 +637,7 @@ resource "aws_subnet" "public" {
   cidr_block              = var.public_subnet_cidr
   availability_zone       = "${var.aws_region}a"
   map_public_ip_on_launch = true
-  
+
   tags = {
     Name = "auto-rmf-public-subnet"
   }
@@ -648,7 +648,7 @@ resource "aws_subnet" "private" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = var.private_subnet_cidr
   availability_zone = "${var.aws_region}a"
-  
+
   tags = {
     Name = "auto-rmf-private-subnet"
   }
@@ -657,12 +657,12 @@ resource "aws_subnet" "private" {
 # Public route table
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
-  
+
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.main.id
   }
-  
+
   tags = {
     Name = "auto-rmf-public-rt"
   }
@@ -676,7 +676,7 @@ resource "aws_route_table_association" "public" {
 # Private route table
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
-  
+
   tags = {
     Name = "auto-rmf-private-rt"
   }
@@ -691,7 +691,7 @@ resource "aws_route_table_association" "private" {
 resource "aws_network_acl" "public" {
   vpc_id     = aws_vpc.main.id
   subnet_ids = [aws_subnet.public.id]
-  
+
   ingress {
     protocol   = "tcp"
     rule_no    = 100
@@ -700,7 +700,7 @@ resource "aws_network_acl" "public" {
     from_port  = 443
     to_port    = 443
   }
-  
+
   ingress {
     protocol   = "tcp"
     rule_no    = 110
@@ -709,7 +709,7 @@ resource "aws_network_acl" "public" {
     from_port  = 80
     to_port    = 80
   }
-  
+
   ingress {
     protocol   = "tcp"
     rule_no    = 120
@@ -718,7 +718,7 @@ resource "aws_network_acl" "public" {
     from_port  = 1024
     to_port    = 65535
   }
-  
+
   egress {
     protocol   = -1
     rule_no    = 100
@@ -727,7 +727,7 @@ resource "aws_network_acl" "public" {
     from_port  = 0
     to_port    = 0
   }
-  
+
   tags = {
     Name = "auto-rmf-public-nacl"
   }
@@ -737,7 +737,7 @@ resource "aws_network_acl" "public" {
 resource "aws_network_acl" "private" {
   vpc_id     = aws_vpc.main.id
   subnet_ids = [aws_subnet.private.id]
-  
+
   ingress {
     protocol   = -1
     rule_no    = 100
@@ -746,7 +746,7 @@ resource "aws_network_acl" "private" {
     from_port  = 0
     to_port    = 0
   }
-  
+
   egress {
     protocol   = -1
     rule_no    = 100
@@ -755,7 +755,7 @@ resource "aws_network_acl" "private" {
     from_port  = 0
     to_port    = 0
   }
-  
+
   tags = {
     Name = "auto-rmf-private-nacl"
   }
@@ -766,7 +766,7 @@ resource "aws_security_group" "alb" {
   name        = "auto-rmf-alb-sg"
   description = "Security group for Application Load Balancer"
   vpc_id      = aws_vpc.main.id
-  
+
   ingress {
     description = "HTTPS from Internet"
     from_port   = 443
@@ -774,7 +774,7 @@ resource "aws_security_group" "alb" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
   ingress {
     description = "HTTP from Internet"
     from_port   = 80
@@ -782,7 +782,7 @@ resource "aws_security_group" "alb" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
   egress {
     description = "All outbound"
     from_port   = 0
@@ -790,7 +790,7 @@ resource "aws_security_group" "alb" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
   tags = {
     Name = "auto-rmf-alb-sg"
   }
@@ -801,7 +801,7 @@ resource "aws_security_group" "app" {
   name        = "auto-rmf-app-sg"
   description = "Security group for application instances"
   vpc_id      = aws_vpc.main.id
-  
+
   ingress {
     description     = "HTTP from ALB"
     from_port       = 80
@@ -809,7 +809,7 @@ resource "aws_security_group" "app" {
     protocol        = "tcp"
     security_groups = [aws_security_group.alb.id]
   }
-  
+
   egress {
     description = "All outbound"
     from_port   = 0
@@ -817,7 +817,7 @@ resource "aws_security_group" "app" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
   tags = {
     Name = "auto-rmf-app-sg"
   }
@@ -830,9 +830,9 @@ resource "aws_lb" "main" {
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]
   subnets            = [aws_subnet.public.id]
-  
+
   enable_deletion_protection = false
-  
+
   tags = {
     Name = "auto-rmf-alb"
   }
@@ -842,55 +842,55 @@ resource "aws_lb" "main" {
 resource "aws_wafv2_web_acl" "main" {
   name  = "auto-rmf-web-acl"
   scope = "REGIONAL"
-  
+
   default_action {
     allow {}
   }
-  
+
   rule {
     name     = "RateLimitRule"
     priority = 1
-    
+
     action {
       block {}
     }
-    
+
     statement {
       rate_based_statement {
         limit              = 2000
         aggregate_key_type = "IP"
       }
     }
-    
+
     visibility_config {
       cloudwatch_metrics_enabled = true
       metric_name                = "RateLimitRule"
       sampled_requests_enabled   = true
     }
   }
-  
+
   rule {
     name     = "AWSManagedRulesCommonRuleSet"
     priority = 2
-    
+
     override_action {
       none {}
     }
-    
+
     statement {
       managed_rule_group_statement {
         name        = "AWSManagedRulesCommonRuleSet"
         vendor_name = "AWS"
       }
     }
-    
+
     visibility_config {
       cloudwatch_metrics_enabled = true
       metric_name                = "AWSManagedRulesCommonRuleSetMetric"
       sampled_requests_enabled   = true
     }
   }
-  
+
   visibility_config {
     cloudwatch_metrics_enabled = true
     metric_name                = "auto-rmf-web-acl"
@@ -914,7 +914,7 @@ resource "aws_flow_log" "main" {
 
 resource "aws_iam_role" "flow_logs" {
   name = "VPCFlowLogsRole"
-  
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -932,7 +932,7 @@ resource "aws_iam_role" "flow_logs" {
 resource "aws_iam_role_policy" "flow_logs" {
   name = "VPCFlowLogsPolicy"
   role = aws_iam_role.flow_logs.id
-  
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -954,7 +954,7 @@ resource "aws_iam_role_policy" "flow_logs" {
 # Security services module
 module "security_services" {
   source = "../../modules/security-services"
-  
+
   aws_region = var.aws_region
   account_id = var.workload_account_id
 }
@@ -962,7 +962,7 @@ module "security_services" {
 # Compliance baseline module
 module "compliance_baseline" {
   source = "../../modules/compliance-baseline"
-  
+
   aws_region = var.aws_region
   account_id = var.workload_account_id
 }

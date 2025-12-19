@@ -1,13 +1,13 @@
 terraform {
   required_version = ">= 1.5.0"
-  
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
   }
-  
+
   backend "s3" {
     bucket         = "auto-rmf-terraform-state"
     key            = "logging/terraform.tfstate"
@@ -19,7 +19,7 @@ terraform {
 
 provider "aws" {
   region = var.aws_region
-  
+
   default_tags {
     tags = {
       Project     = "AUTO-RMF"
@@ -35,7 +35,7 @@ resource "aws_kms_key" "s3_logging" {
   description             = "KMS key for AUTO-RMF S3 logging buckets"
   deletion_window_in_days = 30
   enable_key_rotation     = true
-  
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -100,7 +100,7 @@ resource "aws_s3_bucket" "cloudtrail" {
 
 resource "aws_s3_bucket_versioning" "cloudtrail" {
   bucket = aws_s3_bucket.cloudtrail.id
-  
+
   versioning_configuration {
     status = "Enabled"
   }
@@ -108,7 +108,7 @@ resource "aws_s3_bucket_versioning" "cloudtrail" {
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "cloudtrail" {
   bucket = aws_s3_bucket.cloudtrail.id
-  
+
   rule {
     apply_server_side_encryption_by_default {
       sse_algorithm     = "aws:kms"
@@ -119,7 +119,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "cloudtrail" {
 
 resource "aws_s3_bucket_public_access_block" "cloudtrail" {
   bucket = aws_s3_bucket.cloudtrail.id
-  
+
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
@@ -128,7 +128,7 @@ resource "aws_s3_bucket_public_access_block" "cloudtrail" {
 
 resource "aws_s3_bucket_policy" "cloudtrail" {
   bucket = aws_s3_bucket.cloudtrail.id
-  
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -161,7 +161,7 @@ resource "aws_s3_bucket_policy" "cloudtrail" {
 
 resource "aws_s3_bucket_policy" "vpc_flow_logs" {
   bucket = aws_s3_bucket.vpc_flow_logs.id
-  
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -175,7 +175,7 @@ resource "aws_s3_bucket_policy" "vpc_flow_logs" {
         Resource = "${aws_s3_bucket.vpc_flow_logs.arn}/*"
         Condition = {
           StringEquals = {
-            "s3:x-amz-acl" = "bucket-owner-full-control"
+            "s3:x-amz-acl"      = "bucket-owner-full-control"
             "aws:SourceAccount" = var.workload_account_id
           }
         }
@@ -205,7 +205,7 @@ resource "aws_s3_bucket" "config_snapshots" {
 
 resource "aws_s3_bucket_versioning" "config_snapshots" {
   bucket = aws_s3_bucket.config_snapshots.id
-  
+
   versioning_configuration {
     status = "Enabled"
   }
@@ -213,7 +213,7 @@ resource "aws_s3_bucket_versioning" "config_snapshots" {
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "config_snapshots" {
   bucket = aws_s3_bucket.config_snapshots.id
-  
+
   rule {
     apply_server_side_encryption_by_default {
       sse_algorithm     = "aws:kms"
@@ -224,7 +224,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "config_snapshots"
 
 resource "aws_s3_bucket_public_access_block" "config_snapshots" {
   bucket = aws_s3_bucket.config_snapshots.id
-  
+
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
@@ -238,7 +238,7 @@ resource "aws_s3_bucket" "vpc_flow_logs" {
 
 resource "aws_s3_bucket_versioning" "vpc_flow_logs" {
   bucket = aws_s3_bucket.vpc_flow_logs.id
-  
+
   versioning_configuration {
     status = "Enabled"
   }
@@ -246,7 +246,7 @@ resource "aws_s3_bucket_versioning" "vpc_flow_logs" {
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "vpc_flow_logs" {
   bucket = aws_s3_bucket.vpc_flow_logs.id
-  
+
   rule {
     apply_server_side_encryption_by_default {
       sse_algorithm     = "aws:kms"
@@ -257,7 +257,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "vpc_flow_logs" {
 
 resource "aws_s3_bucket_public_access_block" "vpc_flow_logs" {
   bucket = aws_s3_bucket.vpc_flow_logs.id
-  
+
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
@@ -271,7 +271,7 @@ resource "aws_s3_bucket" "cloudwatch_logs" {
 
 resource "aws_s3_bucket_versioning" "cloudwatch_logs" {
   bucket = aws_s3_bucket.cloudwatch_logs.id
-  
+
   versioning_configuration {
     status = "Enabled"
   }
@@ -279,7 +279,7 @@ resource "aws_s3_bucket_versioning" "cloudwatch_logs" {
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "cloudwatch_logs" {
   bucket = aws_s3_bucket.cloudwatch_logs.id
-  
+
   rule {
     apply_server_side_encryption_by_default {
       sse_algorithm     = "aws:kms"
@@ -290,7 +290,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "cloudwatch_logs" 
 
 resource "aws_s3_bucket_public_access_block" "cloudwatch_logs" {
   bucket = aws_s3_bucket.cloudwatch_logs.id
-  
+
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
@@ -304,7 +304,7 @@ resource "aws_s3_bucket" "evidence" {
 
 resource "aws_s3_bucket_versioning" "evidence" {
   bucket = aws_s3_bucket.evidence.id
-  
+
   versioning_configuration {
     status = "Enabled"
   }
@@ -312,7 +312,7 @@ resource "aws_s3_bucket_versioning" "evidence" {
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "evidence" {
   bucket = aws_s3_bucket.evidence.id
-  
+
   rule {
     apply_server_side_encryption_by_default {
       sse_algorithm     = "aws:kms"
@@ -323,7 +323,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "evidence" {
 
 resource "aws_s3_bucket_public_access_block" "evidence" {
   bucket = aws_s3_bucket.evidence.id
-  
+
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
@@ -333,7 +333,7 @@ resource "aws_s3_bucket_public_access_block" "evidence" {
 # Config aggregator
 resource "aws_config_configuration_aggregator" "organization" {
   name = "auto-rmf-org-aggregator"
-  
+
   organization_aggregation_source {
     all_regions = true
     role_arn    = aws_iam_role.config_aggregator.arn
@@ -342,7 +342,7 @@ resource "aws_config_configuration_aggregator" "organization" {
 
 resource "aws_iam_role" "config_aggregator" {
   name = "ConfigAggregatorRole"
-  
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -365,7 +365,7 @@ resource "aws_iam_role_policy_attachment" "config_aggregator" {
 # Security services module
 module "security_services" {
   source = "../../modules/security-services"
-  
+
   aws_region = var.aws_region
   account_id = var.logging_account_id
 }
@@ -373,7 +373,7 @@ module "security_services" {
 # Compliance baseline module
 module "compliance_baseline" {
   source = "../../modules/compliance-baseline"
-  
+
   aws_region = var.aws_region
   account_id = var.logging_account_id
 }

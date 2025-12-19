@@ -1,13 +1,13 @@
 terraform {
   required_version = ">= 1.5.0"
-  
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
   }
-  
+
   backend "s3" {
     bucket         = "auto-rmf-terraform-state"
     key            = "management/terraform.tfstate"
@@ -19,7 +19,7 @@ terraform {
 
 provider "aws" {
   region = var.aws_region
-  
+
   default_tags {
     tags = {
       Project     = "AUTO-RMF"
@@ -37,7 +37,7 @@ resource "aws_s3_bucket" "terraform_state" {
 
 resource "aws_s3_bucket_versioning" "terraform_state" {
   bucket = aws_s3_bucket.terraform_state.id
-  
+
   versioning_configuration {
     status = "Enabled"
   }
@@ -45,7 +45,7 @@ resource "aws_s3_bucket_versioning" "terraform_state" {
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state" {
   bucket = aws_s3_bucket.terraform_state.id
-  
+
   rule {
     apply_server_side_encryption_by_default {
       sse_algorithm = "AES256"
@@ -55,7 +55,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state" 
 
 resource "aws_s3_bucket_public_access_block" "terraform_state" {
   bucket = aws_s3_bucket.terraform_state.id
-  
+
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
@@ -67,7 +67,7 @@ resource "aws_dynamodb_table" "terraform_lock" {
   name         = "terraform-state-lock"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "LockID"
-  
+
   attribute {
     name = "LockID"
     type = "S"
@@ -85,9 +85,9 @@ resource "aws_organizations_organization" "main" {
     "guardduty.amazonaws.com",
     "securityhub.amazonaws.com"
   ]
-  
+
   feature_set = "ALL"
-  
+
   enabled_policy_types = [
     "SERVICE_CONTROL_POLICY"
   ]
@@ -112,25 +112,25 @@ resource "aws_cloudtrail" "organization_trail" {
   is_multi_region_trail         = true
   is_organization_trail         = true
   enable_log_file_validation    = true
-  
+
   event_selector {
     read_write_type           = "All"
     include_management_events = true
   }
-  
+
   depends_on = [aws_organizations_organization.main]
 }
 
 # GuardDuty organization configuration
 resource "aws_guardduty_detector" "main" {
   enable = true
-  
+
   finding_publishing_frequency = "FIFTEEN_MINUTES"
 }
 
 resource "aws_guardduty_organization_admin_account" "security" {
   admin_account_id = var.security_account_id
-  
+
   depends_on = [aws_guardduty_detector.main]
 }
 
@@ -139,7 +139,7 @@ resource "aws_securityhub_account" "main" {}
 
 resource "aws_securityhub_organization_admin_account" "security" {
   admin_account_id = var.security_account_id
-  
+
   depends_on = [aws_securityhub_account.main]
 }
 
@@ -148,14 +148,14 @@ resource "aws_organizations_policy" "require_encryption" {
   name        = "RequireEncryption"
   description = "Require encryption for S3 and EBS"
   type        = "SERVICE_CONTROL_POLICY"
-  
+
   content = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Sid    = "DenyUnencryptedS3Upload"
-        Effect = "Deny"
-        Action = "s3:PutObject"
+        Sid      = "DenyUnencryptedS3Upload"
+        Effect   = "Deny"
+        Action   = "s3:PutObject"
         Resource = "*"
         Condition = {
           StringNotEquals = {
@@ -164,9 +164,9 @@ resource "aws_organizations_policy" "require_encryption" {
         }
       },
       {
-        Sid    = "DenyUnencryptedEBSVolumes"
-        Effect = "Deny"
-        Action = "ec2:RunInstances"
+        Sid      = "DenyUnencryptedEBSVolumes"
+        Effect   = "Deny"
+        Action   = "ec2:RunInstances"
         Resource = "arn:aws:ec2:*:*:volume/*"
         Condition = {
           Bool = {
@@ -191,7 +191,7 @@ resource "aws_budgets_budget" "monthly" {
   limit_unit        = "USD"
   time_period_start = "2025-01-01_00:00"
   time_unit         = "MONTHLY"
-  
+
   notification {
     comparison_operator        = "GREATER_THAN"
     threshold                  = 80
@@ -199,7 +199,7 @@ resource "aws_budgets_budget" "monthly" {
     notification_type          = "ACTUAL"
     subscriber_email_addresses = [var.alert_email]
   }
-  
+
   notification {
     comparison_operator        = "GREATER_THAN"
     threshold                  = 100
