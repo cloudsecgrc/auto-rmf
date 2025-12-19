@@ -10,8 +10,6 @@ resource "aws_config_config_rule" "mfa_enabled" {
     owner             = "AWS"
     source_identifier = "IAM_ROOT_ACCESS_KEY_CHECK"
   }
-  
-  depends_on = [aws_config_configuration_recorder.main]
 }
 
 resource "aws_config_config_rule" "mfa_enabled_for_root" {
@@ -301,9 +299,4 @@ resource "aws_config_config_rule" "rds_storage_encrypted" {
     owner             = "AWS"
     source_identifier = "RDS_STORAGE_ENCRYPTED"
   }
-}
-
-# Reference to Config recorder (created by security-services module)
-data "aws_config_configuration_recorder" "main" {
-  name = "auto-rmf-config-recorder"
 }

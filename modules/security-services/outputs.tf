@@ -12,3 +12,8 @@ output "config_recorder_id" {
   description = "Config recorder ID"
   value       = aws_config_configuration_recorder.main.id
 }
+
+output "config_recorder_name" {
+  description = "Config recorder name"
+  value       = aws_config_configuration_recorder.main.name
+}

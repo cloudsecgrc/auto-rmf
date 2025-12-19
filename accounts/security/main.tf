@@ -336,6 +336,7 @@ module "security_services" {
 module "compliance_baseline" {
   source = "../../modules/compliance-baseline"
 
+  depends_on = [module.security_services]
   aws_region = var.aws_region
   account_id = var.security_account_id
 }
