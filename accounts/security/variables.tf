@@ -1,7 +1,6 @@
 variable "aws_region" {
   description = "AWS region for resources"
   type        = string
-  default     = "us-east-1"
 }
 
 variable "security_account_id" {
@@ -14,29 +13,12 @@ variable "management_account_id" {
   type        = string
 }
 
-variable "logging_account_id" {
-  description = "Logging account ID"
-  type        = string
-}
-
-variable "workload_account_id" {
-  description = "Workload account ID"
-  type        = string
-}
-
 variable "evidence_bucket_name" {
   description = "S3 bucket name for evidence collection"
   type        = string
-  default     = "auto-rmf-evidence-collection"
 }
 
 variable "alert_email" {
   description = "Email address for security alerts"
   type        = string
-}
-
-
-variable "oidc_role_name" {
-  type        = string
-  description = "Name of the OIDC role in management"
 }

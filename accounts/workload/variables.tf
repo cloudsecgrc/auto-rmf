@@ -4,13 +4,13 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-variable "workload_account_id" {
-  description = "Workload account ID"
+variable "management_account_id" {
+  description = "Management account ID"
   type        = string
 }
 
-variable "security_account_id" {
-  description = "Security account ID"
+variable "workload_account_id" {
+  description = "Workload account ID"
   type        = string
 }
 
@@ -30,9 +30,4 @@ variable "private_subnet_cidr" {
   description = "CIDR block for private subnet"
   type        = string
   default     = "10.0.2.0/24"
-}
-
-variable "oidc_role_name" {
-  type        = string
-  description = "Name of the OIDC role in management"
 }

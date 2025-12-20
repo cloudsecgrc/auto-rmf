@@ -13,16 +13,6 @@ variable "security_account_id" {
   type        = string
 }
 
-variable "logging_account_id" {
-  description = "Logging account ID"
-  type        = string
-}
-
-variable "workload_account_id" {
-  description = "Workload account ID"
-  type        = string
-}
-
 variable "cloudtrail_bucket_name" {
   description = "S3 bucket name for CloudTrail logs (exists in logging account)"
   type        = string

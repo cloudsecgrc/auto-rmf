@@ -17,8 +17,3 @@ output "evidence_collector_function_arn" {
   description = "Evidence collector Lambda function ARN"
   value       = aws_lambda_function.evidence_collector.arn
 }
-
-output "terraform_execution_role_arn" {
-  description = "ARN of the execution role for CI/CD"
-  value       = aws_iam_role.terraform_execution_role.arn
-}
