@@ -1,7 +1,11 @@
 variable "aws_region" {
   description = "AWS region for resources"
   type        = string
-  default     = "us-east-1"
+}
+
+variable "management_account_id" {
+  description = "Management account ID"
+  type        = string
 }
 
 variable "security_account_id" {
@@ -20,7 +24,7 @@ variable "workload_account_id" {
 }
 
 variable "cloudtrail_bucket_name" {
-  description = "S3 bucket name for CloudTrail logs (must exist in logging account)"
+  description = "S3 bucket name for CloudTrail logs (exists in logging account)"
   type        = string
 }
 

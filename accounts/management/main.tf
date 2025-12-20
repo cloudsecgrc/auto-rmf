@@ -30,79 +30,26 @@ provider "aws" {
   }
 }
 
-# S3 bucket for Terraform state
-resource "aws_s3_bucket" "terraform_state" {
+##############################################
+########## Bootstrap Infrastructure ##########
+##############################################
+
+# Reference existing S3 bucket for Terraform state
+data "aws_s3_bucket" "terraform_state" {
   bucket = "auto-rmf-terraform-state"
 }
 
-resource "aws_s3_bucket_versioning" "terraform_state" {
-  bucket = aws_s3_bucket.terraform_state.id
-
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
-
-resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state" {
-  bucket = aws_s3_bucket.terraform_state.id
-
-  rule {
-    apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
-    }
-  }
-}
-
-resource "aws_s3_bucket_public_access_block" "terraform_state" {
-  bucket = aws_s3_bucket.terraform_state.id
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-}
-
-# DynamoDB table for state locking
-resource "aws_dynamodb_table" "terraform_lock" {
-  name         = "terraform-state-lock"
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "LockID"
-
-  attribute {
-    name = "LockID"
-    type = "S"
-  }
+# Reference existing DynamoDB table for state locking
+data "aws_dynamodb_table" "terraform_lock" {
+  name = "terraform-state-lock"
 }
 
 ##############################################
 ############ AWS Organizations  ##############
 ##############################################
 
-resource "aws_organizations_organization" "main" {
-  aws_service_access_principals = [
-    "cloudtrail.amazonaws.com",
-    "config.amazonaws.com",
-    "guardduty.amazonaws.com",
-    "securityhub.amazonaws.com"
-  ]
-
-  feature_set = "ALL"
-
-  enabled_policy_types = [
-    "SERVICE_CONTROL_POLICY"
-  ]
-}
-
-# Organizational Units
-resource "aws_organizations_organizational_unit" "security" {
-  name      = "Security"
-  parent_id = aws_organizations_organization.main.roots[0].id
-}
-
-resource "aws_organizations_organizational_unit" "infrastructure" {
-  name      = "Infrastructure"
-  parent_id = aws_organizations_organization.main.roots[0].id
-}
+# Reference existing AWS Organization
+data "aws_organizations_organization" "main" {}
 
 # Organization CloudTrail
 resource "aws_cloudtrail" "organization_trail" {
@@ -117,21 +64,15 @@ resource "aws_cloudtrail" "organization_trail" {
     read_write_type           = "All"
     include_management_events = true
   }
-
-  depends_on = [aws_organizations_organization.main]
 }
 
-# GuardDuty organization configuration
-resource "aws_guardduty_detector" "main" {
-  enable = true
-
-  finding_publishing_frequency = "FIFTEEN_MINUTES"
+# Reference existing GuardDuty detector
+data "aws_guardduty_detector" "main" {
+  id = "c0cd6ff978a636b902d873e13411b874"
 }
 
 resource "aws_guardduty_organization_admin_account" "security" {
   admin_account_id = var.security_account_id
-
-  depends_on = [aws_guardduty_detector.main]
 }
 
 # Security Hub organization configuration
@@ -180,7 +121,7 @@ resource "aws_organizations_policy" "require_encryption" {
 
 resource "aws_organizations_policy_attachment" "require_encryption" {
   policy_id = aws_organizations_policy.require_encryption.id
-  target_id = aws_organizations_organization.main.roots[0].id
+  target_id = data.aws_organizations_organization.main.roots[0].id
 }
 
 # Budget alerts
@@ -207,15 +148,4 @@ resource "aws_budgets_budget" "monthly" {
     notification_type          = "FORECASTED"
     subscriber_email_addresses = [var.alert_email]
   }
-}
-
-# IAM user for Terraform (using temporarily but will soon migrate to OIDC)
-resource "aws_iam_user" "terraform" {
-  name = "terraform-admin"
-  path = "/automation/"
-}
-
-resource "aws_iam_user_policy_attachment" "terraform_admin" {
-  user       = aws_iam_user.terraform.name
-  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
