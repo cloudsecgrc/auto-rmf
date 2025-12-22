@@ -1,3 +1,8 @@
+#################################
+########## References ###########
+#################################
+
+# terraform version
 terraform {
   required_version = ">= 1.5.0"
 
@@ -8,6 +13,7 @@ terraform {
     }
   }
 
+# management account backend reference
   backend "s3" {
     bucket         = "auto-rmf-terraform-state"
     key            = "management/terraform.tfstate"
@@ -17,6 +23,7 @@ terraform {
   }
 }
 
+# management account provider 
 provider "aws" {
   region = var.aws_region
 
@@ -30,9 +37,18 @@ provider "aws" {
   }
 }
 
-##############################################
-########## Bootstrap Infrastructure ##########
-##############################################
+# management account local variables
+locals {
+  aws_region             = "us-east-1"
+  alert_email            = "cloudsecgrc@gmail.com"
+  management_account_id  = "995761092254"
+  security_account_id    = "918595517273"
+  cloudtrail_bucket_name = "auto-rmf-cloudtrail-logs"
+}
+
+###############################################
+########## Bootstrap Infrastructure ###########
+###############################################
 
 # Reference existing S3 bucket for Terraform state
 data "aws_s3_bucket" "terraform_state" {
