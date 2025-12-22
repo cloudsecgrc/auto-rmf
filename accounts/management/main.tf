@@ -59,19 +59,19 @@ data "aws_dynamodb_table" "terraform_lock" {
 data "aws_organizations_organization" "main" {}
 
 # Organization CloudTrail
-resource "aws_cloudtrail" "organization_trail" {
-  name                          = "auto-rmf-org-trail"
-  s3_bucket_name                = var.cloudtrail_bucket_name
-  include_global_service_events = true
-  is_multi_region_trail         = true
-  is_organization_trail         = true
-  enable_log_file_validation    = true
-
-  event_selector {
-    read_write_type           = "All"
-    include_management_events = true
-  }
-}
+# resource "aws_cloudtrail" "organization_trail" {
+# name                          = "auto-rmf-org-trail"
+# s3_bucket_name                = var.cloudtrail_bucket_name
+# include_global_service_events = true
+# is_multi_region_trail         = true
+# is_organization_trail         = true
+# enable_log_file_validation    = true
+#
+# event_selector {
+#   read_write_type           = "All"
+#   include_management_events = true
+# }
+#}
 
 # Reference existing GuardDuty detector
 data "aws_guardduty_detector" "main" {
