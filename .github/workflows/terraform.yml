@@ -64,10 +64,20 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
+      - name: Set Role ARN
+        id: set-role
+        run: |
+         case ${{ matrix.account }} in
+            management) echo "role_arn=${{ env.MANAGEMENT_ROLE_ARN }}" >> $GITHUB_OUTPUT ;;
+            logging) echo "role_arn=${{ env.LOGGING_ROLE_ARN }}" >> $GITHUB_OUTPUT ;;
+            security) echo "role_arn=${{ env.SECURITY_ROLE_ARN }}" >> $GITHUB_OUTPUT ;;
+            workload) echo "role_arn=${{ env.WORKLOAD_ROLE_ARN }}" >> $GITHUB_OUTPUT ;;
+          esac 
+          
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: ${{ env.MANAGEMENT_ROLE_ARN }}
+          role-to-assume: ${{ steps.set-role.outputs.role.arn }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Terraform Init
@@ -77,33 +87,6 @@ jobs:
       - name: Terraform Plan
         working-directory: accounts/${{ matrix.account }}
         run: terraform plan -no-color
-
-  apply-management:
-    name: Apply Management
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: ${{ env.TF_VERSION }}
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          role-to-assume: ${{ env.MANAGEMENT_ROLE_ARN }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Terraform Init
-        working-directory: accounts/management
-        run: terraform init
-
-      - name: Terraform Apply
-        working-directory: accounts/management
-        run: terraform apply -auto-approve
 
   apply-logging:
     name: Apply Logging
@@ -131,6 +114,33 @@ jobs:
 
       - name: Terraform Apply
         working-directory: accounts/logging
+        run: terraform apply -auto-approve
+
+  apply-management:
+    name: Apply Management
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ env.MANAGEMENT_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Terraform Init
+        working-directory: accounts/management
+        run: terraform init
+
+      - name: Terraform Apply
+        working-directory: accounts/management
         run: terraform apply -auto-approve
 
   apply-security:
