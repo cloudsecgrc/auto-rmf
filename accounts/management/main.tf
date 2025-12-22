@@ -13,7 +13,7 @@ terraform {
     }
   }
 
-# management account backend reference
+# backend
   backend "s3" {
     bucket         = "auto-rmf-terraform-state"
     key            = "management/terraform.tfstate"
@@ -23,7 +23,7 @@ terraform {
   }
 }
 
-# management account provider 
+# provider 
 provider "aws" {
   region = var.aws_region
 
@@ -35,15 +35,6 @@ provider "aws" {
       Account     = "Management"
     }
   }
-}
-
-# management account local variables
-locals {
-  aws_region             = "us-east-1"
-  alert_email            = "cloudsecgrc@gmail.com"
-  management_account_id  = "995761092254"
-  security_account_id    = "918595517273"
-  cloudtrail_bucket_name = "auto-rmf-cloudtrail-logs"
 }
 
 ###############################################
