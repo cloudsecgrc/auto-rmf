@@ -17,3 +17,13 @@ output "evidence_collector_function_arn" {
   description = "Evidence collector Lambda function ARN"
   value       = aws_lambda_function.evidence_collector.arn
 }
+
+output "config_aggregator_name" {
+  description = "Config aggregator name"
+  value       = aws_config_configuration_aggregator.organization.name
+}
+
+output "config_aggregator_arn" {
+  description = "Config aggregator ARN"
+  value       = aws_config_configuration_aggregator.organization.arn
+}

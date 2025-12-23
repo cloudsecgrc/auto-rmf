@@ -30,6 +30,39 @@ provider "aws" {
   }
 }
 
+# Config aggregator for organization-wide compliance visibility
+resource "aws_config_configuration_aggregator" "organization" {
+  name = "auto-rmf-org-aggregator"
+
+  organization_aggregation_source {
+    all_regions = true
+    role_arn    = aws_iam_role.config_aggregator.arn
+  }
+}
+
+resource "aws_iam_role" "config_aggregator" {
+  name = "ConfigAggregatorRole"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "config.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "config_aggregator" {
+  role       = aws_iam_role.config_aggregator.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSConfigRoleForOrganizations"
+}
+
+
 # SNS topics for security alerts
 resource "aws_sns_topic" "security_hub_critical" {
   name = "auto-rmf-securityhub-critical"

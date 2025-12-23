@@ -231,6 +231,48 @@ resource "aws_s3_bucket_public_access_block" "config_snapshots" {
   restrict_public_buckets = true
 }
 
+resource "aws_s3_bucket_policy" "config_snapshots" {
+  bucket = aws_s3_bucket.config_snapshots.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AWSConfigBucketPermissionsCheck"
+        Effect = "Allow"
+        Principal = {
+          Service = "config.amazonaws.com"
+        }
+        Action   = "s3:GetBucketAcl"
+        Resource = aws_s3_bucket.config_snapshots.arn
+      },
+      {
+        Sid    = "AWSConfigBucketExistenceCheck"
+        Effect = "Allow"
+        Principal = {
+          Service = "config.amazonaws.com"
+        }
+        Action   = "s3:ListBucket"
+        Resource = aws_s3_bucket.config_snapshots.arn
+      },
+      {
+        Sid    = "AWSConfigWrite"
+        Effect = "Allow"
+        Principal = {
+          Service = "config.amazonaws.com"
+        }
+        Action   = "s3:PutObject"
+        Resource = "${aws_s3_bucket.config_snapshots.arn}/*"
+        Condition = {
+          StringEquals = {
+            "s3:x-amz-acl" = "bucket-owner-full-control"
+          }
+        }
+      }
+    ]
+  })
+}
+
 # VPC Flow Logs bucket
 resource "aws_s3_bucket" "vpc_flow_logs" {
   bucket = "auto-rmf-vpc-flow-logs"
@@ -328,38 +370,6 @@ resource "aws_s3_bucket_public_access_block" "evidence" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
-}
-
-# Config aggregator
-resource "aws_config_configuration_aggregator" "organization" {
-  name = "auto-rmf-org-aggregator"
-
-  organization_aggregation_source {
-    all_regions = true
-    role_arn    = aws_iam_role.config_aggregator.arn
-  }
-}
-
-resource "aws_iam_role" "config_aggregator" {
-  name = "ConfigAggregatorRole"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "config.amazonaws.com"
-        }
-      }
-    ]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "config_aggregator" {
-  role       = aws_iam_role.config_aggregator.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSConfigRoleForOrganizations"
 }
 
 # Security services module

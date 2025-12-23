@@ -3,22 +3,7 @@ terraform {
 }
 
 # GuardDuty
-resource "aws_guardduty_detector" "main" {
-  enable = true
-  
-  finding_publishing_frequency = "FIFTEEN_MINUTES"
-  
-  datasources {
-    s3_logs {
-      enable = true
-    }
-    kubernetes {
-      audit_logs {
-        enable = false # not using kubernetes
-      }
-    }
-  }
-}
+data "aws_guardduty_detector" "main" {}
 
 # Security Hub
 resource "aws_securityhub_account" "main" {}
@@ -80,7 +65,7 @@ resource "aws_iam_role" "config" {
 
 resource "aws_iam_role_policy_attachment" "config" {
   role       = aws_iam_role.config.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/ConfigRole"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWS_ConfigRole"
 }
 
 resource "aws_iam_role_policy" "config_s3" {
