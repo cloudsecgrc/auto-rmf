@@ -46,7 +46,7 @@ resource "aws_config_configuration_aggregator" "organization" {
   }
 }
 
-########### CONFIG AGGREGATOR IAM ROLE ###########
+# CONFIG AGGREGATOR IAM ROLE
 resource "aws_iam_role" "config_aggregator" {
   name = "ConfigAggregatorRole"
 
@@ -64,7 +64,7 @@ resource "aws_iam_role" "config_aggregator" {
   })
 }
 
-########### CONFIG AGGREGATOR IAM ROLE POLICY ###########
+# CONFIG AGGREGATOR IAM ROLE POLICY #
 resource "aws_iam_role_policy_attachment" "config_aggregator" {
   role       = aws_iam_role.config_aggregator.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSConfigRoleForOrganizations"
