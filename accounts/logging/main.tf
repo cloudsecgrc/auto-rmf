@@ -1,3 +1,4 @@
+########### TERRAFORM VERSION ###########
 terraform {
   required_version = ">= 1.5.0"
 
@@ -8,6 +9,7 @@ terraform {
     }
   }
 
+########### BACKEND ###########
   backend "s3" {
     bucket         = "auto-rmf-terraform-state"
     key            = "logging/terraform.tfstate"
@@ -17,6 +19,7 @@ terraform {
   }
 }
 
+########### PROVIDER ###########
 provider "aws" {
   region = var.aws_region
 
@@ -30,6 +33,7 @@ provider "aws" {
   }
 }
 
+########### KMS KEY FOR S3 SSE ###########
 # KMS key for S3 bucket encryption
 resource "aws_kms_key" "s3_logging" {
   description             = "KMS key for AUTO-RMF S3 logging buckets"
@@ -87,17 +91,17 @@ resource "aws_kms_key" "s3_logging" {
     ]
   })
 }
-
 resource "aws_kms_alias" "s3_logging" {
   name          = "alias/auto-rmf-s3-logging"
   target_key_id = aws_kms_key.s3_logging.key_id
 }
 
-# CloudTrail logs bucket
+########### CLOUDTRAIL LOGS BUCKET ###########
 resource "aws_s3_bucket" "cloudtrail" {
   bucket = "auto-rmf-cloudtrail-logs"
 }
 
+# BUCKET VERSIONING
 resource "aws_s3_bucket_versioning" "cloudtrail" {
   bucket = aws_s3_bucket.cloudtrail.id
 
@@ -106,6 +110,7 @@ resource "aws_s3_bucket_versioning" "cloudtrail" {
   }
 }
 
+# SERVER SIDE ENCRYPTION
 resource "aws_s3_bucket_server_side_encryption_configuration" "cloudtrail" {
   bucket = aws_s3_bucket.cloudtrail.id
 
@@ -117,6 +122,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "cloudtrail" {
   }
 }
 
+# BLOCK PUBLIC S3 ACCESS
 resource "aws_s3_bucket_public_access_block" "cloudtrail" {
   bucket = aws_s3_bucket.cloudtrail.id
 
@@ -126,6 +132,7 @@ resource "aws_s3_bucket_public_access_block" "cloudtrail" {
   restrict_public_buckets = true
 }
 
+# BUCKET PERMISSIONS POLICY
 resource "aws_s3_bucket_policy" "cloudtrail" {
   bucket = aws_s3_bucket.cloudtrail.id
 
@@ -159,6 +166,7 @@ resource "aws_s3_bucket_policy" "cloudtrail" {
   })
 }
 
+# BUCKET PERMISSIONS POLICY
 resource "aws_s3_bucket_policy" "vpc_flow_logs" {
   bucket = aws_s3_bucket.vpc_flow_logs.id
 
@@ -198,11 +206,12 @@ resource "aws_s3_bucket_policy" "vpc_flow_logs" {
   })
 }
 
-# Config snapshot bucket
+########### CONFIG SNAPSHOT BUCKET ###########
 resource "aws_s3_bucket" "config_snapshots" {
   bucket = "auto-rmf-config-snapshots"
 }
 
+# BUCKET VERSIONING
 resource "aws_s3_bucket_versioning" "config_snapshots" {
   bucket = aws_s3_bucket.config_snapshots.id
 
@@ -211,6 +220,7 @@ resource "aws_s3_bucket_versioning" "config_snapshots" {
   }
 }
 
+# SERVER SIDE ENCRYPTION
 resource "aws_s3_bucket_server_side_encryption_configuration" "config_snapshots" {
   bucket = aws_s3_bucket.config_snapshots.id
 
@@ -222,6 +232,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "config_snapshots"
   }
 }
 
+# BLOCK PUBLIC S3 ACCESS
 resource "aws_s3_bucket_public_access_block" "config_snapshots" {
   bucket = aws_s3_bucket.config_snapshots.id
 
@@ -231,6 +242,7 @@ resource "aws_s3_bucket_public_access_block" "config_snapshots" {
   restrict_public_buckets = true
 }
 
+# BUCKET PERMISSIONS POLICY
 resource "aws_s3_bucket_policy" "config_snapshots" {
   bucket = aws_s3_bucket.config_snapshots.id
 
@@ -273,11 +285,12 @@ resource "aws_s3_bucket_policy" "config_snapshots" {
   })
 }
 
-# VPC Flow Logs bucket
+########### VPC FLOW LOGS BUCKET ###########
 resource "aws_s3_bucket" "vpc_flow_logs" {
   bucket = "auto-rmf-vpc-flow-logs"
 }
 
+# BUCKET VERSIONING
 resource "aws_s3_bucket_versioning" "vpc_flow_logs" {
   bucket = aws_s3_bucket.vpc_flow_logs.id
 
@@ -286,6 +299,7 @@ resource "aws_s3_bucket_versioning" "vpc_flow_logs" {
   }
 }
 
+# SERVER SIDE ENCRYPTION
 resource "aws_s3_bucket_server_side_encryption_configuration" "vpc_flow_logs" {
   bucket = aws_s3_bucket.vpc_flow_logs.id
 
@@ -297,6 +311,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "vpc_flow_logs" {
   }
 }
 
+# BLOCK PUBLIC S3 ACCESS
 resource "aws_s3_bucket_public_access_block" "vpc_flow_logs" {
   bucket = aws_s3_bucket.vpc_flow_logs.id
 
@@ -306,11 +321,12 @@ resource "aws_s3_bucket_public_access_block" "vpc_flow_logs" {
   restrict_public_buckets = true
 }
 
-# CloudWatch Logs bucket
+########### CLOUDWATCH LOGS BUCKET ###########
 resource "aws_s3_bucket" "cloudwatch_logs" {
   bucket = "auto-rmf-cloudwatch-logs"
 }
 
+# BUCKET VERSIONING
 resource "aws_s3_bucket_versioning" "cloudwatch_logs" {
   bucket = aws_s3_bucket.cloudwatch_logs.id
 
@@ -319,6 +335,7 @@ resource "aws_s3_bucket_versioning" "cloudwatch_logs" {
   }
 }
 
+# SERVER SIDE ENCRYPTION
 resource "aws_s3_bucket_server_side_encryption_configuration" "cloudwatch_logs" {
   bucket = aws_s3_bucket.cloudwatch_logs.id
 
@@ -330,6 +347,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "cloudwatch_logs" 
   }
 }
 
+# BLOCK PUBLIC S3 ACCESS
 resource "aws_s3_bucket_public_access_block" "cloudwatch_logs" {
   bucket = aws_s3_bucket.cloudwatch_logs.id
 
@@ -339,11 +357,12 @@ resource "aws_s3_bucket_public_access_block" "cloudwatch_logs" {
   restrict_public_buckets = true
 }
 
-# Evidence collection bucket
+########### EVIDENCE COLLECTION BUCKET ###########
 resource "aws_s3_bucket" "evidence" {
   bucket = "auto-rmf-evidence-collection"
 }
 
+# BUCKET VERSIONING
 resource "aws_s3_bucket_versioning" "evidence" {
   bucket = aws_s3_bucket.evidence.id
 
@@ -352,6 +371,7 @@ resource "aws_s3_bucket_versioning" "evidence" {
   }
 }
 
+# SERVER SIDE ENCRYPTION
 resource "aws_s3_bucket_server_side_encryption_configuration" "evidence" {
   bucket = aws_s3_bucket.evidence.id
 
@@ -363,6 +383,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "evidence" {
   }
 }
 
+# BLOCK PUBLIC S3 ACCESS
 resource "aws_s3_bucket_public_access_block" "evidence" {
   bucket = aws_s3_bucket.evidence.id
 
@@ -372,7 +393,10 @@ resource "aws_s3_bucket_public_access_block" "evidence" {
   restrict_public_buckets = true
 }
 
-# Security services module
+##################################################################
+##################################################################
+
+########### SECURITY SERVICES MODULE ###########
 module "security_services" {
   source = "../../modules/security-services"
 
@@ -380,7 +404,7 @@ module "security_services" {
   account_id = var.logging_account_id
 }
 
-# Compliance baseline module
+########### COMPLIANCE BASELINE MODULE ###########
 module "compliance_baseline" {
   source = "../../modules/compliance-baseline"
 
