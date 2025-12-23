@@ -164,3 +164,23 @@ resource "aws_budgets_budget" "monthly" {
     subscriber_email_addresses = [var.alert_email]
   }
 }
+
+##############################################################################
+##############################################################################
+
+########### SECURITY SERVICES MODULE ###########
+module "security_services" {
+  source = "../../modules/security-services"
+
+  aws_region = var.aws_region
+  account_id = var.management_account_id
+}
+
+########### COMPLIANCE BASELINE MODULE ###########
+module "compliance_baseline" {
+  source = "../../modules/compliance-baseline"
+
+  depends_on = [module.security_services]
+  aws_region = var.aws_region
+  account_id = var.management_account_id
+}
