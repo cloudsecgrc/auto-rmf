@@ -8,12 +8,12 @@ output "securityhub_account_id" {
   value       = aws_securityhub_account.main.id
 }
 
-output "config_recorder_id" {
-  description = "Config recorder ID"
-  value       = aws_config_configuration_recorder.main.id
-}
-
 output "config_recorder_name" {
   description = "Config recorder name"
   value       = aws_config_configuration_recorder.main.name
+}
+
+output "config_role_arn" {
+  description = "Config IAM role ARN"
+  value       = aws_iam_role.config.arn
 }
