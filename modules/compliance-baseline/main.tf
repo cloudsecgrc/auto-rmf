@@ -282,11 +282,3 @@ resource "aws_config_config_rule" "encrypted_volumes" {
     source_identifier = "ENCRYPTED_VOLUMES"
   }
 }
-
-##############################################################################
-##############################################################################
-
-########### DATA SOURCE - CONFIG RECORDER ###########
-data "aws_config_configuration_recorder" "main" {
-  name = "auto-rmf-config-recorder"
-}
