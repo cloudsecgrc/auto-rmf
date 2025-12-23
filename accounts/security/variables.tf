@@ -1,36 +1,39 @@
-variable "aws_region" {
-  description = "AWS region for resources"
-  type        = string
+output "organization_id" {
+  description = "AWS Organization ID"
+  value       = data.aws_organizations_organization.main.id
 }
 
-variable "security_account_id" {
-  description = "Security account ID"
-  type        = string
+output "organization_root_id" {
+  description = "AWS Organization root ID"
+  value       = data.aws_organizations_organization.main.roots[0].id
 }
 
-variable "management_account_id" {
-  description = "Management account ID"
-  type        = string
+output "cloudtrail_name" {
+  description = "Organization CloudTrail name"
+  value       = aws_cloudtrail.organization_trail.name
 }
 
-variable "evidence_bucket_name" {
-  description = "S3 bucket name for evidence collection"
-  type        = string
+output "guardduty_delegated_admin" {
+  description = "GuardDuty delegated admin account ID"
+  value       = aws_organizations_delegated_administrator.guardduty.account_id
 }
 
-variable "alert_email" {
-  description = "Email address for security alerts"
-  type        = string
+output "securityhub_delegated_admin" {
+  description = "Security Hub delegated admin account ID"
+  value       = aws_organizations_delegated_administrator.securityhub.account_id
 }
 
-variable "enable_evidence_collector" {
-  description = "Enable Lambda evidence collector (requires Lambda zip file)"
-  type        = bool
-  default     = false
+output "config_delegated_admin" {
+  description = "Config delegated admin account ID"
+  value       = aws_organizations_delegated_administrator.config.account_id
 }
 
-variable "enable_config_aggregator" {
-  description = "Enable Config aggregator (requires delegated admin)"
-  type        = bool
-  default     = false
+output "terraform_state_bucket" {
+  description = "Terraform state S3 bucket"
+  value       = data.aws_s3_bucket.terraform_state.id
+}
+
+output "terraform_lock_table" {
+  description = "Terraform state lock DynamoDB table"
+  value       = data.aws_dynamodb_table.terraform_lock.name
 }
