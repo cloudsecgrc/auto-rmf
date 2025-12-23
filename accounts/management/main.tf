@@ -13,7 +13,7 @@ terraform {
     }
   }
 
-# backend
+  # backend
   backend "s3" {
     bucket         = "auto-rmf-terraform-state"
     key            = "management/terraform.tfstate"
