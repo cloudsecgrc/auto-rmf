@@ -1,39 +1,24 @@
-output "organization_id" {
-  description = "AWS Organization ID"
-  value       = data.aws_organizations_organization.main.id
+output "config_aggregator_name" {
+  description = "Config aggregator name"
+  value       = var.enable_config_aggregator ? aws_config_configuration_aggregator.organization[0].name : null
 }
 
-output "organization_root_id" {
-  description = "AWS Organization root ID"
-  value       = data.aws_organizations_organization.main.roots[0].id
+output "security_hub_critical_topic_arn" {
+  description = "Security Hub critical findings SNS topic ARN"
+  value       = aws_sns_topic.security_hub_critical.arn
 }
 
-output "cloudtrail_name" {
-  description = "Organization CloudTrail name"
-  value       = aws_cloudtrail.organization_trail.name
+output "guardduty_high_topic_arn" {
+  description = "GuardDuty high severity SNS topic ARN"
+  value       = aws_sns_topic.guardduty_high.arn
 }
 
-output "guardduty_delegated_admin" {
-  description = "GuardDuty delegated admin account ID"
-  value       = aws_organizations_delegated_administrator.guardduty.account_id
+output "config_noncompliant_topic_arn" {
+  description = "Config non-compliant SNS topic ARN"
+  value       = aws_sns_topic.config_noncompliant.arn
 }
 
-output "securityhub_delegated_admin" {
-  description = "Security Hub delegated admin account ID"
-  value       = aws_organizations_delegated_administrator.securityhub.account_id
-}
-
-output "config_delegated_admin" {
-  description = "Config delegated admin account ID"
-  value       = aws_organizations_delegated_administrator.config.account_id
-}
-
-output "terraform_state_bucket" {
-  description = "Terraform state S3 bucket"
-  value       = data.aws_s3_bucket.terraform_state.id
-}
-
-output "terraform_lock_table" {
-  description = "Terraform state lock DynamoDB table"
-  value       = data.aws_dynamodb_table.terraform_lock.name
+output "evidence_collector_function_name" {
+  description = "Evidence collector Lambda function name"
+  value       = var.enable_evidence_collector ? aws_lambda_function.evidence_collector[0].function_name : null
 }
