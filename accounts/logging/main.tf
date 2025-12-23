@@ -33,11 +33,19 @@ provider "aws" {
   }
 }
 
-##################################################################
-##################################################################
+########### LOCAL VARIABLES ###########
+locals {
+  cloudtrail_bucket_name     = "auto-rmf-cloudtrail-logs"
+  config_snapshots_bucket    = "auto-rmf-config-snapshots"
+  vpc_flow_logs_bucket       = "auto-rmf-vpc-flow-logs"
+  cloudwatch_logs_bucket     = "auto-rmf-cloudwatch-logs"
+  evidence_collection_bucket = "auto-rmf-evidence-collection"
+}
 
-########### KMS KEY FOR S3 SSE ###########
-# KMS key for S3 bucket encryption
+##############################################################################
+##############################################################################
+
+########### KMS KEY - S3 LOGGING ENCRYPTION ###########
 resource "aws_kms_key" "s3_logging" {
   description             = "KMS key for AUTO-RMF S3 logging buckets"
   deletion_window_in_days = 30
@@ -66,6 +74,11 @@ resource "aws_kms_key" "s3_logging" {
           "kms:DecryptDataKey"
         ]
         Resource = "*"
+        Condition = {
+          StringEquals = {
+            "aws:SourceArn" = "arn:aws:cloudtrail:${var.aws_region}:${var.management_account_id}:trail/auto-rmf-org-trail"
+          }
+        }
       },
       {
         Sid    = "Allow Config to encrypt logs"
@@ -94,17 +107,22 @@ resource "aws_kms_key" "s3_logging" {
     ]
   })
 }
+
+########### KMS ALIAS ###########
 resource "aws_kms_alias" "s3_logging" {
   name          = "alias/auto-rmf-s3-logging"
   target_key_id = aws_kms_key.s3_logging.key_id
 }
 
-########### CLOUDTRAIL LOGS BUCKET ###########
+##############################################################################
+##############################################################################
+
+########### S3 BUCKET - CLOUDTRAIL LOGS ###########
 resource "aws_s3_bucket" "cloudtrail" {
-  bucket = "auto-rmf-cloudtrail-logs"
+  bucket = local.cloudtrail_bucket_name
 }
 
-# BUCKET VERSIONING
+########### S3 BUCKET VERSIONING - CLOUDTRAIL ###########
 resource "aws_s3_bucket_versioning" "cloudtrail" {
   bucket = aws_s3_bucket.cloudtrail.id
 
@@ -113,7 +131,7 @@ resource "aws_s3_bucket_versioning" "cloudtrail" {
   }
 }
 
-# SERVER SIDE ENCRYPTION
+########### S3 BUCKET ENCRYPTION - CLOUDTRAIL ###########
 resource "aws_s3_bucket_server_side_encryption_configuration" "cloudtrail" {
   bucket = aws_s3_bucket.cloudtrail.id
 
@@ -125,7 +143,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "cloudtrail" {
   }
 }
 
-# BLOCK PUBLIC S3 ACCESS
+########### S3 BUCKET PUBLIC ACCESS BLOCK - CLOUDTRAIL ###########
 resource "aws_s3_bucket_public_access_block" "cloudtrail" {
   bucket = aws_s3_bucket.cloudtrail.id
 
@@ -135,7 +153,7 @@ resource "aws_s3_bucket_public_access_block" "cloudtrail" {
   restrict_public_buckets = true
 }
 
-# BUCKET PERMISSIONS POLICY
+########### S3 BUCKET POLICY - CLOUDTRAIL ###########
 resource "aws_s3_bucket_policy" "cloudtrail" {
   bucket = aws_s3_bucket.cloudtrail.id
 
@@ -158,7 +176,21 @@ resource "aws_s3_bucket_policy" "cloudtrail" {
           Service = "cloudtrail.amazonaws.com"
         }
         Action   = "s3:PutObject"
-        Resource = "${aws_s3_bucket.cloudtrail.arn}/*"
+        Resource = "${aws_s3_bucket.cloudtrail.arn}/AWSLogs/${var.management_account_id}/*"
+        Condition = {
+          StringEquals = {
+            "s3:x-amz-acl" = "bucket-owner-full-control"
+          }
+        }
+      },
+      {
+        Sid    = "AWSCloudTrailWriteOrg"
+        Effect = "Allow"
+        Principal = {
+          Service = "cloudtrail.amazonaws.com"
+        }
+        Action   = "s3:PutObject"
+        Resource = "${aws_s3_bucket.cloudtrail.arn}/AWSLogs/${var.organization_id}/*"
         Condition = {
           StringEquals = {
             "s3:x-amz-acl" = "bucket-owner-full-control"
@@ -169,52 +201,15 @@ resource "aws_s3_bucket_policy" "cloudtrail" {
   })
 }
 
-# BUCKET PERMISSIONS POLICY
-resource "aws_s3_bucket_policy" "vpc_flow_logs" {
-  bucket = aws_s3_bucket.vpc_flow_logs.id
+##############################################################################
+##############################################################################
 
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Sid    = "AWSLogDeliveryWrite"
-        Effect = "Allow"
-        Principal = {
-          Service = "delivery.logs.amazonaws.com"
-        }
-        Action   = "s3:PutObject"
-        Resource = "${aws_s3_bucket.vpc_flow_logs.arn}/*"
-        Condition = {
-          StringEquals = {
-            "s3:x-amz-acl"      = "bucket-owner-full-control"
-            "aws:SourceAccount" = var.workload_account_id
-          }
-        }
-      },
-      {
-        Sid    = "AWSLogDeliveryAclCheck"
-        Effect = "Allow"
-        Principal = {
-          Service = "delivery.logs.amazonaws.com"
-        }
-        Action   = "s3:GetBucketAcl"
-        Resource = aws_s3_bucket.vpc_flow_logs.arn
-        Condition = {
-          StringEquals = {
-            "aws:SourceAccount" = var.workload_account_id
-          }
-        }
-      }
-    ]
-  })
-}
-
-########### CONFIG SNAPSHOT BUCKET ###########
+########### S3 BUCKET - CONFIG SNAPSHOTS ###########
 resource "aws_s3_bucket" "config_snapshots" {
-  bucket = "auto-rmf-config-snapshots"
+  bucket = local.config_snapshots_bucket
 }
 
-# BUCKET VERSIONING
+########### S3 BUCKET VERSIONING - CONFIG ###########
 resource "aws_s3_bucket_versioning" "config_snapshots" {
   bucket = aws_s3_bucket.config_snapshots.id
 
@@ -223,7 +218,7 @@ resource "aws_s3_bucket_versioning" "config_snapshots" {
   }
 }
 
-# SERVER SIDE ENCRYPTION
+########### S3 BUCKET ENCRYPTION - CONFIG ###########
 resource "aws_s3_bucket_server_side_encryption_configuration" "config_snapshots" {
   bucket = aws_s3_bucket.config_snapshots.id
 
@@ -235,7 +230,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "config_snapshots"
   }
 }
 
-# BLOCK PUBLIC S3 ACCESS
+########### S3 BUCKET PUBLIC ACCESS BLOCK - CONFIG ###########
 resource "aws_s3_bucket_public_access_block" "config_snapshots" {
   bucket = aws_s3_bucket.config_snapshots.id
 
@@ -245,7 +240,7 @@ resource "aws_s3_bucket_public_access_block" "config_snapshots" {
   restrict_public_buckets = true
 }
 
-# BUCKET PERMISSIONS POLICY
+########### S3 BUCKET POLICY - CONFIG ###########
 resource "aws_s3_bucket_policy" "config_snapshots" {
   bucket = aws_s3_bucket.config_snapshots.id
 
@@ -288,12 +283,15 @@ resource "aws_s3_bucket_policy" "config_snapshots" {
   })
 }
 
-########### VPC FLOW LOGS BUCKET ###########
+##############################################################################
+##############################################################################
+
+########### S3 BUCKET - VPC FLOW LOGS ###########
 resource "aws_s3_bucket" "vpc_flow_logs" {
-  bucket = "auto-rmf-vpc-flow-logs"
+  bucket = local.vpc_flow_logs_bucket
 }
 
-# BUCKET VERSIONING
+########### S3 BUCKET VERSIONING - VPC FLOW LOGS ###########
 resource "aws_s3_bucket_versioning" "vpc_flow_logs" {
   bucket = aws_s3_bucket.vpc_flow_logs.id
 
@@ -302,7 +300,7 @@ resource "aws_s3_bucket_versioning" "vpc_flow_logs" {
   }
 }
 
-# SERVER SIDE ENCRYPTION
+########### S3 BUCKET ENCRYPTION - VPC FLOW LOGS ###########
 resource "aws_s3_bucket_server_side_encryption_configuration" "vpc_flow_logs" {
   bucket = aws_s3_bucket.vpc_flow_logs.id
 
@@ -314,7 +312,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "vpc_flow_logs" {
   }
 }
 
-# BLOCK PUBLIC S3 ACCESS
+########### S3 BUCKET PUBLIC ACCESS BLOCK - VPC FLOW LOGS ###########
 resource "aws_s3_bucket_public_access_block" "vpc_flow_logs" {
   bucket = aws_s3_bucket.vpc_flow_logs.id
 
@@ -324,12 +322,55 @@ resource "aws_s3_bucket_public_access_block" "vpc_flow_logs" {
   restrict_public_buckets = true
 }
 
-########### CLOUDWATCH LOGS BUCKET ###########
-resource "aws_s3_bucket" "cloudwatch_logs" {
-  bucket = "auto-rmf-cloudwatch-logs"
+########### S3 BUCKET POLICY - VPC FLOW LOGS ###########
+resource "aws_s3_bucket_policy" "vpc_flow_logs" {
+  bucket = aws_s3_bucket.vpc_flow_logs.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AWSLogDeliveryWrite"
+        Effect = "Allow"
+        Principal = {
+          Service = "delivery.logs.amazonaws.com"
+        }
+        Action   = "s3:PutObject"
+        Resource = "${aws_s3_bucket.vpc_flow_logs.arn}/*"
+        Condition = {
+          StringEquals = {
+            "s3:x-amz-acl"      = "bucket-owner-full-control"
+            "aws:SourceAccount" = var.workload_account_id
+          }
+        }
+      },
+      {
+        Sid    = "AWSLogDeliveryAclCheck"
+        Effect = "Allow"
+        Principal = {
+          Service = "delivery.logs.amazonaws.com"
+        }
+        Action   = "s3:GetBucketAcl"
+        Resource = aws_s3_bucket.vpc_flow_logs.arn
+        Condition = {
+          StringEquals = {
+            "aws:SourceAccount" = var.workload_account_id
+          }
+        }
+      }
+    ]
+  })
 }
 
-# BUCKET VERSIONING
+##############################################################################
+##############################################################################
+
+########### S3 BUCKET - CLOUDWATCH LOGS ###########
+resource "aws_s3_bucket" "cloudwatch_logs" {
+  bucket = local.cloudwatch_logs_bucket
+}
+
+########### S3 BUCKET VERSIONING - CLOUDWATCH ###########
 resource "aws_s3_bucket_versioning" "cloudwatch_logs" {
   bucket = aws_s3_bucket.cloudwatch_logs.id
 
@@ -338,7 +379,7 @@ resource "aws_s3_bucket_versioning" "cloudwatch_logs" {
   }
 }
 
-# SERVER SIDE ENCRYPTION
+########### S3 BUCKET ENCRYPTION - CLOUDWATCH ###########
 resource "aws_s3_bucket_server_side_encryption_configuration" "cloudwatch_logs" {
   bucket = aws_s3_bucket.cloudwatch_logs.id
 
@@ -350,7 +391,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "cloudwatch_logs" 
   }
 }
 
-# BLOCK PUBLIC S3 ACCESS
+########### S3 BUCKET PUBLIC ACCESS BLOCK - CLOUDWATCH ###########
 resource "aws_s3_bucket_public_access_block" "cloudwatch_logs" {
   bucket = aws_s3_bucket.cloudwatch_logs.id
 
@@ -360,12 +401,15 @@ resource "aws_s3_bucket_public_access_block" "cloudwatch_logs" {
   restrict_public_buckets = true
 }
 
-########### EVIDENCE COLLECTION BUCKET ###########
+##############################################################################
+##############################################################################
+
+########### S3 BUCKET - EVIDENCE COLLECTION ###########
 resource "aws_s3_bucket" "evidence" {
-  bucket = "auto-rmf-evidence-collection"
+  bucket = local.evidence_collection_bucket
 }
 
-# BUCKET VERSIONING
+########### S3 BUCKET VERSIONING - EVIDENCE ###########
 resource "aws_s3_bucket_versioning" "evidence" {
   bucket = aws_s3_bucket.evidence.id
 
@@ -374,7 +418,7 @@ resource "aws_s3_bucket_versioning" "evidence" {
   }
 }
 
-# SERVER SIDE ENCRYPTION
+########### S3 BUCKET ENCRYPTION - EVIDENCE ###########
 resource "aws_s3_bucket_server_side_encryption_configuration" "evidence" {
   bucket = aws_s3_bucket.evidence.id
 
@@ -386,7 +430,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "evidence" {
   }
 }
 
-# BLOCK PUBLIC S3 ACCESS
+########### S3 BUCKET PUBLIC ACCESS BLOCK - EVIDENCE ###########
 resource "aws_s3_bucket_public_access_block" "evidence" {
   bucket = aws_s3_bucket.evidence.id
 
@@ -396,7 +440,7 @@ resource "aws_s3_bucket_public_access_block" "evidence" {
   restrict_public_buckets = true
 }
 
-########### LAMBDA BUCKET POLICY ###########
+########### S3 BUCKET POLICY - EVIDENCE ###########
 resource "aws_s3_bucket_policy" "evidence" {
   bucket = aws_s3_bucket.evidence.id
 
@@ -407,7 +451,7 @@ resource "aws_s3_bucket_policy" "evidence" {
         Sid    = "AllowSecurityAccountLambdaWrite"
         Effect = "Allow"
         Principal = {
-          AWS = "arn:aws:iam::918595517273:role/LambdaEvidenceCollectorRole"
+          AWS = "arn:aws:iam::${var.security_account_id}:role/LambdaEvidenceCollectorRole"
         }
         Action = [
           "s3:PutObject",
@@ -419,7 +463,7 @@ resource "aws_s3_bucket_policy" "evidence" {
         Sid    = "AllowSecurityAccountListBucket"
         Effect = "Allow"
         Principal = {
-          AWS = "arn:aws:iam::918595517273:role/LambdaEvidenceCollectorRole"
+          AWS = "arn:aws:iam::${var.security_account_id}:role/LambdaEvidenceCollectorRole"
         }
         Action   = "s3:ListBucket"
         Resource = aws_s3_bucket.evidence.arn
@@ -428,8 +472,8 @@ resource "aws_s3_bucket_policy" "evidence" {
   })
 }
 
-##################################################################
-##################################################################
+##############################################################################
+##############################################################################
 
 ########### SECURITY SERVICES MODULE ###########
 module "security_services" {
