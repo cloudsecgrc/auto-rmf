@@ -73,23 +73,6 @@ data "aws_organizations_organization" "main" {}
 # }
 #}
 
-# Reference existing GuardDuty detector
-data "aws_guardduty_detector" "main" {
-  id = "c0cd6ff978a636b902d873e13411b874"
-}
-
-resource "aws_guardduty_organization_admin_account" "security" {
-  admin_account_id = var.security_account_id
-}
-
-# Security Hub organization configuration
-resource "aws_securityhub_account" "main" {}
-
-resource "aws_securityhub_organization_admin_account" "security" {
-  admin_account_id = var.security_account_id
-
-  depends_on = [aws_securityhub_account.main]
-}
 
 # Service Control Policies
 resource "aws_organizations_policy" "require_encryption" {
