@@ -114,7 +114,7 @@ resource "aws_sns_topic_subscription" "config_noncompliant" {
   endpoint  = var.alert_email
 }
 
-########### KMS key for SNS encryption ###########
+########### KMS KEY FOR SNS ENCRYPTION ###########
 resource "aws_kms_key" "sns" {
   description             = "KMS key for AUTO-RMF SNS topics"
   deletion_window_in_days = 30
