@@ -33,13 +33,18 @@ provider "aws" {
   }
 }
 
-##################################################################
-##################################################################
+########### LOCAL VARIABLES ###########
+locals {
+  evidence_bucket_name = "auto-rmf-evidence-collection"
+}
+
+##############################################################################
+##############################################################################
 
 ########### CONFIG AGGREGATOR FOR ORGANIZATION ###########
 resource "aws_config_configuration_aggregator" "organization" {
   count = var.enable_config_aggregator ? 1 : 0
-  
+
   name = "auto-rmf-org-aggregator"
 
   organization_aggregation_source {
@@ -48,9 +53,10 @@ resource "aws_config_configuration_aggregator" "organization" {
   }
 }
 
-# CONFIG AGGREGATOR IAM ROLE
+########### CONFIG AGGREGATOR IAM ROLE ###########
 resource "aws_iam_role" "config_aggregator" {
   count = var.enable_config_aggregator ? 1 : 0
+
   name = "ConfigAggregatorRole"
 
   assume_role_policy = jsonencode({
@@ -67,59 +73,18 @@ resource "aws_iam_role" "config_aggregator" {
   })
 }
 
-# CONFIG AGGREGATOR IAM ROLE POLICY 
+########### CONFIG AGGREGATOR IAM ROLE POLICY ###########
 resource "aws_iam_role_policy_attachment" "config_aggregator" {
   count = var.enable_config_aggregator ? 1 : 0
-  
+
   role       = aws_iam_role.config_aggregator[0].name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSConfigRoleForOrganizations"
 }
 
-########### SNS TOPICS - SECURITY ALERTS ###########
-# SECURITY HUB CRITICAL
-resource "aws_sns_topic" "security_hub_critical" {
-  name = "auto-rmf-securityhub-critical"
+##############################################################################
+##############################################################################
 
-  kms_master_key_id = aws_kms_key.sns.id
-}
-
-# GUARDDUTY HIGH
-resource "aws_sns_topic" "guardduty_high" {
-  name = "auto-rmf-guardduty-high"
-
-  kms_master_key_id = aws_kms_key.sns.id
-}
-
-# CONFIG NON-COMPLIANT
-resource "aws_sns_topic" "config_noncompliant" {
-  name = "auto-rmf-config-noncompliant"
-
-  kms_master_key_id = aws_kms_key.sns.id
-}
-
-########### SNS TOPIC SUBSCRIPTIONS ###########
-# SECURITY HUB CRITICAL
-resource "aws_sns_topic_subscription" "security_hub_critical" {
-  topic_arn = aws_sns_topic.security_hub_critical.arn
-  protocol  = "email"
-  endpoint  = var.alert_email
-}
-
-# GUARDDUTY HIGH
-resource "aws_sns_topic_subscription" "guardduty_high" {
-  topic_arn = aws_sns_topic.guardduty_high.arn
-  protocol  = "email"
-  endpoint  = var.alert_email
-}
-
-# CONFIG NON-COMPLIANT
-resource "aws_sns_topic_subscription" "config_noncompliant" {
-  topic_arn = aws_sns_topic.config_noncompliant.arn
-  protocol  = "email"
-  endpoint  = var.alert_email
-}
-
-########### KMS KEY FOR SNS ENCRYPTION ###########
+########### KMS KEY - SNS ENCRYPTION ###########
 resource "aws_kms_key" "sns" {
   description             = "KMS key for AUTO-RMF SNS topics"
   deletion_window_in_days = 30
@@ -153,85 +118,61 @@ resource "aws_kms_key" "sns" {
   })
 }
 
-# KMS KEY ALIAS
+########### KMS ALIAS - SNS ###########
 resource "aws_kms_alias" "sns" {
   name          = "alias/auto-rmf-sns"
   target_key_id = aws_kms_key.sns.key_id
 }
 
-########### EVENTBRIDGE RULES - SECURITY FINDINGS ###########
-resource "aws_cloudwatch_event_rule" "security_hub_critical" {
-  name        = "auto-rmf-securityhub-critical"
-  description = "Capture Security Hub critical findings"
+##############################################################################
+##############################################################################
 
-  event_pattern = jsonencode({
-    source      = ["aws.securityhub"]
-    detail-type = ["Security Hub Findings - Imported"]
-    detail = {
-      findings = {
-        Severity = {
-          Label = ["CRITICAL"]
-        }
-      }
-    }
-  })
+########### SNS TOPIC - SECURITY HUB CRITICAL ###########
+resource "aws_sns_topic" "security_hub_critical" {
+  name              = "auto-rmf-securityhub-critical"
+  kms_master_key_id = aws_kms_key.sns.id
 }
 
-# SECURITY HUB CRITICAL
-resource "aws_cloudwatch_event_target" "security_hub_critical" {
-  rule      = aws_cloudwatch_event_rule.security_hub_critical.name
-  target_id = "SendToSNS"
-  arn       = aws_sns_topic.security_hub_critical.arn
+########### SNS TOPIC - GUARDDUTY HIGH ###########
+resource "aws_sns_topic" "guardduty_high" {
+  name              = "auto-rmf-guardduty-high"
+  kms_master_key_id = aws_kms_key.sns.id
 }
 
-# GUARDDUTY HIGH
-resource "aws_cloudwatch_event_rule" "guardduty_high" {
-  name        = "auto-rmf-guardduty-high"
-  description = "Capture GuardDuty high severity findings"
-
-  event_pattern = jsonencode({
-    source      = ["aws.guardduty"]
-    detail-type = ["GuardDuty Finding"]
-    detail = {
-      severity = [
-        { numeric = [">", 7] }
-      ]
-    }
-  })
+########### SNS TOPIC - CONFIG NON-COMPLIANT ###########
+resource "aws_sns_topic" "config_noncompliant" {
+  name              = "auto-rmf-config-noncompliant"
+  kms_master_key_id = aws_kms_key.sns.id
 }
 
-# GUARDDUTY HIGH - SEND TO SNS
-resource "aws_cloudwatch_event_target" "guardduty_high" {
-  rule      = aws_cloudwatch_event_rule.guardduty_high.name
-  target_id = "SendToSNS"
-  arn       = aws_sns_topic.guardduty_high.arn
+##############################################################################
+##############################################################################
+
+########### SNS TOPIC SUBSCRIPTION - SECURITY HUB CRITICAL ###########
+resource "aws_sns_topic_subscription" "security_hub_critical" {
+  topic_arn = aws_sns_topic.security_hub_critical.arn
+  protocol  = "email"
+  endpoint  = var.alert_email
 }
 
-# CONFIG NON-COMPLIANT 
-resource "aws_cloudwatch_event_rule" "config_noncompliant" {
-  name        = "auto-rmf-config-noncompliant"
-  description = "Capture Config non-compliant resources"
-
-  event_pattern = jsonencode({
-    source      = ["aws.config"]
-    detail-type = ["Config Rules Compliance Change"]
-    detail = {
-      newEvaluationResult = {
-        complianceType = ["NON_COMPLIANT"]
-      }
-    }
-  })
+########### SNS TOPIC SUBSCRIPTION - GUARDDUTY HIGH ###########
+resource "aws_sns_topic_subscription" "guardduty_high" {
+  topic_arn = aws_sns_topic.guardduty_high.arn
+  protocol  = "email"
+  endpoint  = var.alert_email
 }
 
-# CONFIG NON-COMPLIANT - SEND TO SNS
-resource "aws_cloudwatch_event_target" "config_noncompliant" {
-  rule      = aws_cloudwatch_event_rule.config_noncompliant.name
-  target_id = "SendToSNS"
-  arn       = aws_sns_topic.config_noncompliant.arn
+########### SNS TOPIC SUBSCRIPTION - CONFIG NON-COMPLIANT ###########
+resource "aws_sns_topic_subscription" "config_noncompliant" {
+  topic_arn = aws_sns_topic.config_noncompliant.arn
+  protocol  = "email"
+  endpoint  = var.alert_email
 }
 
-########### SNS TOPIC POLICIES - ALLOW EVENTBRIDGE ###########
-# SECURITY HUB CRITICAL
+##############################################################################
+##############################################################################
+
+########### SNS TOPIC POLICY - SECURITY HUB CRITICAL ###########
 resource "aws_sns_topic_policy" "security_hub_critical" {
   arn = aws_sns_topic.security_hub_critical.arn
 
@@ -250,7 +191,7 @@ resource "aws_sns_topic_policy" "security_hub_critical" {
   })
 }
 
-# GUARDDUTY HIGH
+########### SNS TOPIC POLICY - GUARDDUTY HIGH ###########
 resource "aws_sns_topic_policy" "guardduty_high" {
   arn = aws_sns_topic.guardduty_high.arn
 
@@ -269,7 +210,7 @@ resource "aws_sns_topic_policy" "guardduty_high" {
   })
 }
 
-# CONFIG NON-COMPLIANT
+########### SNS TOPIC POLICY - CONFIG NON-COMPLIANT ###########
 resource "aws_sns_topic_policy" "config_noncompliant" {
   arn = aws_sns_topic.config_noncompliant.arn
 
@@ -288,10 +229,93 @@ resource "aws_sns_topic_policy" "config_noncompliant" {
   })
 }
 
-########### LAMBDA - EVIDENCE COLLECTION ###########
+##############################################################################
+##############################################################################
+
+########### EVENTBRIDGE RULE - SECURITY HUB CRITICAL ###########
+resource "aws_cloudwatch_event_rule" "security_hub_critical" {
+  name        = "auto-rmf-securityhub-critical"
+  description = "Capture Security Hub critical findings"
+
+  event_pattern = jsonencode({
+    source      = ["aws.securityhub"]
+    detail-type = ["Security Hub Findings - Imported"]
+    detail = {
+      findings = {
+        Severity = {
+          Label = ["CRITICAL"]
+        }
+      }
+    }
+  })
+}
+
+########### EVENTBRIDGE TARGET - SECURITY HUB CRITICAL ###########
+resource "aws_cloudwatch_event_target" "security_hub_critical" {
+  rule      = aws_cloudwatch_event_rule.security_hub_critical.name
+  target_id = "SendToSNS"
+  arn       = aws_sns_topic.security_hub_critical.arn
+}
+
+##############################################################################
+##############################################################################
+
+########### EVENTBRIDGE RULE - GUARDDUTY HIGH ###########
+resource "aws_cloudwatch_event_rule" "guardduty_high" {
+  name        = "auto-rmf-guardduty-high"
+  description = "Capture GuardDuty high severity findings"
+
+  event_pattern = jsonencode({
+    source      = ["aws.guardduty"]
+    detail-type = ["GuardDuty Finding"]
+    detail = {
+      severity = [
+        { numeric = [">", 7] }
+      ]
+    }
+  })
+}
+
+########### EVENTBRIDGE TARGET - GUARDDUTY HIGH ###########
+resource "aws_cloudwatch_event_target" "guardduty_high" {
+  rule      = aws_cloudwatch_event_rule.guardduty_high.name
+  target_id = "SendToSNS"
+  arn       = aws_sns_topic.guardduty_high.arn
+}
+
+##############################################################################
+##############################################################################
+
+########### EVENTBRIDGE RULE - CONFIG NON-COMPLIANT ###########
+resource "aws_cloudwatch_event_rule" "config_noncompliant" {
+  name        = "auto-rmf-config-noncompliant"
+  description = "Capture Config non-compliant resources"
+
+  event_pattern = jsonencode({
+    source      = ["aws.config"]
+    detail-type = ["Config Rules Compliance Change"]
+    detail = {
+      newEvaluationResult = {
+        complianceType = ["NON_COMPLIANT"]
+      }
+    }
+  })
+}
+
+########### EVENTBRIDGE TARGET - CONFIG NON-COMPLIANT ###########
+resource "aws_cloudwatch_event_target" "config_noncompliant" {
+  rule      = aws_cloudwatch_event_rule.config_noncompliant.name
+  target_id = "SendToSNS"
+  arn       = aws_sns_topic.config_noncompliant.arn
+}
+
+##############################################################################
+##############################################################################
+
+########### LAMBDA FUNCTION - EVIDENCE COLLECTOR ###########
 resource "aws_lambda_function" "evidence_collector" {
   count = var.enable_evidence_collector ? 1 : 0
-  
+
   filename         = "${path.module}/lambda/evidence_collector.zip"
   function_name    = "auto-rmf-evidence-collector"
   role             = aws_iam_role.lambda_evidence[0].arn
@@ -302,15 +326,16 @@ resource "aws_lambda_function" "evidence_collector" {
 
   environment {
     variables = {
-      EVIDENCE_BUCKET     = var.evidence_bucket_name
+      EVIDENCE_BUCKET     = local.evidence_bucket_name
       SECURITY_ACCOUNT_ID = var.security_account_id
     }
   }
 }
 
+########### LAMBDA IAM ROLE - EVIDENCE COLLECTOR ###########
 resource "aws_iam_role" "lambda_evidence" {
   count = var.enable_evidence_collector ? 1 : 0
-  
+
   name = "LambdaEvidenceCollectorRole"
 
   assume_role_policy = jsonencode({
@@ -327,10 +352,12 @@ resource "aws_iam_role" "lambda_evidence" {
   })
 }
 
-# LAMBDA ROLE POLICY
+########### LAMBDA IAM ROLE POLICY - EVIDENCE COLLECTOR ###########
 resource "aws_iam_role_policy" "lambda_evidence" {
+  count = var.enable_evidence_collector ? 1 : 0
+
   name = "LambdaEvidenceCollectorPolicy"
-  role = aws_iam_role.lambda_evidence.id
+  role = aws_iam_role.lambda_evidence[0].id
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -350,7 +377,7 @@ resource "aws_iam_role_policy" "lambda_evidence" {
           "s3:PutObject",
           "s3:GetObject"
         ]
-        Resource = "arn:aws:s3:::${var.evidence_bucket_name}/*"
+        Resource = "arn:aws:s3:::${local.evidence_bucket_name}/*"
       },
       {
         Effect = "Allow"
@@ -369,29 +396,35 @@ resource "aws_iam_role_policy" "lambda_evidence" {
 
 ########### EVENTBRIDGE RULE - EVIDENCE COLLECTION ###########
 resource "aws_cloudwatch_event_rule" "evidence_collection" {
+  count = var.enable_evidence_collector ? 1 : 0
+
   name                = "auto-rmf-evidence-collection"
   description         = "Trigger evidence collection daily"
-  schedule_expression = "cron(0 6 * * ? *)" # Daily at 6 AM UTC
+  schedule_expression = "cron(0 6 * * ? *)"
 }
 
-# CLOUDWATCH LAMBDA TARGET - EVIDENCE COLLECTION 
+########### EVENTBRIDGE TARGET - EVIDENCE COLLECTION ###########
 resource "aws_cloudwatch_event_target" "evidence_collection" {
-  rule      = aws_cloudwatch_event_rule.evidence_collection.name
+  count = var.enable_evidence_collector ? 1 : 0
+
+  rule      = aws_cloudwatch_event_rule.evidence_collection[0].name
   target_id = "LambdaFunction"
-  arn       = aws_lambda_function.evidence_collector.arn
+  arn       = aws_lambda_function.evidence_collector[0].arn
 }
 
-# LAMBDA PERMISSION - EVIDENCE COLLECTION
+########### LAMBDA PERMISSION - EVIDENCE COLLECTION ###########
 resource "aws_lambda_permission" "evidence_collection" {
+  count = var.enable_evidence_collector ? 1 : 0
+
   statement_id  = "AllowExecutionFromEventBridge"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.evidence_collector.function_name
+  function_name = aws_lambda_function.evidence_collector[0].function_name
   principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.evidence_collection.arn
+  source_arn    = aws_cloudwatch_event_rule.evidence_collection[0].arn
 }
 
-##################################################################
-##################################################################
+##############################################################################
+##############################################################################
 
 ########### SECURITY SERVICES MODULE ###########
 module "security_services" {
