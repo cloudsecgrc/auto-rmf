@@ -73,7 +73,6 @@ data "aws_organizations_organization" "main" {}
 # }
 #}
 
-
 # Service Control Policies
 resource "aws_organizations_policy" "require_encryption" {
   name        = "RequireEncryption"
