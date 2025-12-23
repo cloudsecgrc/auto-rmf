@@ -1,29 +1,39 @@
-output "security_hub_critical_topic_arn" {
-  description = "Security Hub critical findings SNS topic ARN"
-  value       = aws_sns_topic.security_hub_critical.arn
+output "organization_id" {
+  description = "AWS Organization ID"
+  value       = data.aws_organizations_organization.main.id
 }
 
-output "guardduty_high_topic_arn" {
-  description = "GuardDuty high severity findings SNS topic ARN"
-  value       = aws_sns_topic.guardduty_high.arn
+output "organization_root_id" {
+  description = "AWS Organization root ID"
+  value       = data.aws_organizations_organization.main.roots[0].id
 }
 
-output "config_noncompliant_topic_arn" {
-  description = "Config non-compliant resources SNS topic ARN"
-  value       = aws_sns_topic.config_noncompliant.arn
+output "cloudtrail_name" {
+  description = "Organization CloudTrail name"
+  value       = aws_cloudtrail.organization_trail.name
 }
 
-output "evidence_collector_function_arn" {
-  description = "Evidence collector Lambda function ARN"
-  value       = aws_lambda_function.evidence_collector.arn
+output "guardduty_delegated_admin" {
+  description = "GuardDuty delegated admin account ID"
+  value       = aws_organizations_delegated_administrator.guardduty.account_id
 }
 
-output "config_aggregator_name" {
-  description = "Config aggregator name"
-  value       = aws_config_configuration_aggregator.organization.name
+output "securityhub_delegated_admin" {
+  description = "Security Hub delegated admin account ID"
+  value       = aws_organizations_delegated_administrator.securityhub.account_id
 }
 
-output "config_aggregator_arn" {
-  description = "Config aggregator ARN"
-  value       = aws_config_configuration_aggregator.organization.arn
+output "config_delegated_admin" {
+  description = "Config delegated admin account ID"
+  value       = aws_organizations_delegated_administrator.config.account_id
+}
+
+output "terraform_state_bucket" {
+  description = "Terraform state S3 bucket"
+  value       = data.aws_s3_bucket.terraform_state.id
+}
+
+output "terraform_lock_table" {
+  description = "Terraform state lock DynamoDB table"
+  value       = data.aws_dynamodb_table.terraform_lock.name
 }
