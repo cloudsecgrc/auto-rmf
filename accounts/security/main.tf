@@ -301,7 +301,7 @@ resource "aws_lambda_function" "evidence_collector" {
   }
 }
 
-########### LAMBDA IAM ROLE ###########
+# LAMBDA IAM ROLE #
 resource "aws_iam_role" "lambda_evidence" {
   name = "LambdaEvidenceCollectorRole"
 
