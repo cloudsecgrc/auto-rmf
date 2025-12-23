@@ -396,6 +396,38 @@ resource "aws_s3_bucket_public_access_block" "evidence" {
   restrict_public_buckets = true
 }
 
+########### LAMBDA BUCKET POLICY ###########
+resource "aws_s3_bucket_policy" "evidence" {
+  bucket = aws_s3_bucket.evidence.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowSecurityAccountLambdaWrite"
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::918595517273:role/LambdaEvidenceCollectorRole"
+        }
+        Action = [
+          "s3:PutObject",
+          "s3:GetObject"
+        ]
+        Resource = "${aws_s3_bucket.evidence.arn}/*"
+      },
+      {
+        Sid    = "AllowSecurityAccountListBucket"
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::918595517273:role/LambdaEvidenceCollectorRole"
+        }
+        Action   = "s3:ListBucket"
+        Resource = aws_s3_bucket.evidence.arn
+      }
+    ]
+  })
+}
+
 ##################################################################
 ##################################################################
 
