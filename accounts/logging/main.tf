@@ -433,7 +433,7 @@ resource "aws_s3_bucket_policy" "evidence" {
 
 ########### SECURITY SERVICES MODULE ###########
 module "security_services" {
-  source = "../modules/security-services"
+  source = "../../modules/security-services"
 
   aws_region = var.aws_region
   account_id = var.logging_account_id
@@ -441,7 +441,7 @@ module "security_services" {
 
 ########### COMPLIANCE BASELINE MODULE ###########
 module "compliance_baseline" {
-  source = "../modules/compliance-baseline"
+  source = "../../modules/compliance-baseline"
 
   depends_on = [module.security_services]
   aws_region = var.aws_region
