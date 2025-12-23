@@ -139,6 +139,12 @@ jobs:
         working-directory: accounts/management
         run: terraform init
 
+      - name: Import GuardDuty Delegation
+        working-directory: accounts/management
+        run: |
+          terraform import aws_guardduty_organization_admin_account.security 918595517273 || true
+        continue-on-error: true
+
       - name: Terraform Apply
         working-directory: accounts/management
         run: terraform apply -auto-approve
