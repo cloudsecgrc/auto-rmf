@@ -38,16 +38,19 @@ provider "aws" {
 
 ########### CONFIG AGGREGATOR FOR ORGANIZATION ###########
 resource "aws_config_configuration_aggregator" "organization" {
+  count = var.enable_config_aggregator ? 1 : 0
+  
   name = "auto-rmf-org-aggregator"
 
   organization_aggregation_source {
     all_regions = true
-    role_arn    = aws_iam_role.config_aggregator.arn
+    role_arn    = aws_iam_role.config_aggregator[0].arn
   }
 }
 
 # CONFIG AGGREGATOR IAM ROLE
 resource "aws_iam_role" "config_aggregator" {
+  count = var.enable_config_aggregator ? 1 : 0
   name = "ConfigAggregatorRole"
 
   assume_role_policy = jsonencode({
@@ -64,9 +67,11 @@ resource "aws_iam_role" "config_aggregator" {
   })
 }
 
-# CONFIG AGGREGATOR IAM ROLE POLICY #
+# CONFIG AGGREGATOR IAM ROLE POLICY 
 resource "aws_iam_role_policy_attachment" "config_aggregator" {
-  role       = aws_iam_role.config_aggregator.name
+  count = var.enable_config_aggregator ? 1 : 0
+  
+  role       = aws_iam_role.config_aggregator[0].name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSConfigRoleForOrganizations"
 }
 
@@ -285,9 +290,11 @@ resource "aws_sns_topic_policy" "config_noncompliant" {
 
 ########### LAMBDA - EVIDENCE COLLECTION ###########
 resource "aws_lambda_function" "evidence_collector" {
+  count = var.enable_evidence_collector ? 1 : 0
+  
   filename         = "${path.module}/lambda/evidence_collector.zip"
   function_name    = "auto-rmf-evidence-collector"
-  role             = aws_iam_role.lambda_evidence.arn
+  role             = aws_iam_role.lambda_evidence[0].arn
   handler          = "evidence_collector.lambda_handler"
   source_code_hash = filebase64sha256("${path.module}/lambda/evidence_collector.zip")
   runtime          = "python3.11"
@@ -301,8 +308,9 @@ resource "aws_lambda_function" "evidence_collector" {
   }
 }
 
-# LAMBDA IAM ROLE #
 resource "aws_iam_role" "lambda_evidence" {
+  count = var.enable_evidence_collector ? 1 : 0
+  
   name = "LambdaEvidenceCollectorRole"
 
   assume_role_policy = jsonencode({
