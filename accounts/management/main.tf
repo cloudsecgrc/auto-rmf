@@ -1,8 +1,4 @@
-#################################
-########## References ###########
-#################################
-
-# terraform version
+########### TERRAFORM VERSION ###########
 terraform {
   required_version = ">= 1.5.0"
 
@@ -13,7 +9,7 @@ terraform {
     }
   }
 
-  # backend
+########### BACKEND ###########
   backend "s3" {
     bucket         = "auto-rmf-terraform-state"
     key            = "management/terraform.tfstate"
@@ -23,7 +19,7 @@ terraform {
   }
 }
 
-# provider 
+########### PROVIDER ###########
 provider "aws" {
   region = var.aws_region
 
@@ -37,43 +33,69 @@ provider "aws" {
   }
 }
 
-###############################################
-########## Bootstrap Infrastructure ###########
-###############################################
+########### LOCAL VARIABLES ###########
+locals {
+  cloudtrail_bucket_name = "auto-rmf-cloudtrail-logs"
+}
 
-# Reference existing S3 bucket for Terraform state
+##############################################################################
+##############################################################################
+
+########### AWS ORGANIZATIONS - DATA SOURCE ###########
+data "aws_organizations_organization" "main" {}
+
+########### TERRAFORM STATE INFRASTRUCTURE - DATA SOURCES ###########
 data "aws_s3_bucket" "terraform_state" {
   bucket = "auto-rmf-terraform-state"
 }
 
-# Reference existing DynamoDB table for state locking
 data "aws_dynamodb_table" "terraform_lock" {
   name = "terraform-state-lock"
 }
 
-##############################################
-############ AWS Organizations  ##############
-##############################################
+##############################################################################
+##############################################################################
 
-# Reference existing AWS Organization
-data "aws_organizations_organization" "main" {}
+########### DELEGATED ADMINISTRATOR - GUARDDUTY ###########
+resource "aws_organizations_delegated_administrator" "guardduty" {
+  account_id        = var.security_account_id
+  service_principal = "guardduty.amazonaws.com"
+}
 
-# Organization CloudTrail
-# resource "aws_cloudtrail" "organization_trail" {
-# name                          = "auto-rmf-org-trail"
-# s3_bucket_name                = var.cloudtrail_bucket_name
-# include_global_service_events = true
-# is_multi_region_trail         = true
-# is_organization_trail         = true
-# enable_log_file_validation    = true
-#
-# event_selector {
-#   read_write_type           = "All"
-#   include_management_events = true
-# }
-#}
+########### DELEGATED ADMINISTRATOR - SECURITY HUB ###########
+resource "aws_organizations_delegated_administrator" "securityhub" {
+  account_id        = var.security_account_id
+  service_principal = "securityhub.amazonaws.com"
+}
 
-# Service Control Policies
+########### DELEGATED ADMINISTRATOR - CONFIG ###########
+resource "aws_organizations_delegated_administrator" "config" {
+  account_id        = var.security_account_id
+  service_principal = "config.amazonaws.com"
+}
+
+##############################################################################
+##############################################################################
+
+########### ORGANIZATION CLOUDTRAIL ###########
+resource "aws_cloudtrail" "organization_trail" {
+  name                          = "auto-rmf-org-trail"
+  s3_bucket_name                = local.cloudtrail_bucket_name
+  include_global_service_events = true
+  is_multi_region_trail         = true
+  is_organization_trail         = true
+  enable_log_file_validation    = true
+
+  event_selector {
+    read_write_type           = "All"
+    include_management_events = true
+  }
+}
+
+##############################################################################
+##############################################################################
+
+########### SERVICE CONTROL POLICY - REQUIRE ENCRYPTION ###########
 resource "aws_organizations_policy" "require_encryption" {
   name        = "RequireEncryption"
   description = "Require encryption for S3 and EBS"
@@ -89,7 +111,7 @@ resource "aws_organizations_policy" "require_encryption" {
         Resource = "*"
         Condition = {
           StringNotEquals = {
-            "s3:x-amz-server-side-encryption" = "AES256"
+            "s3:x-amz-server-side-encryption" = ["AES256", "aws:kms"]
           }
         }
       },
@@ -108,12 +130,16 @@ resource "aws_organizations_policy" "require_encryption" {
   })
 }
 
+########### SCP ATTACHMENT - REQUIRE ENCRYPTION ###########
 resource "aws_organizations_policy_attachment" "require_encryption" {
   policy_id = aws_organizations_policy.require_encryption.id
   target_id = data.aws_organizations_organization.main.roots[0].id
 }
 
-# Budget alerts
+##############################################################################
+##############################################################################
+
+########### BUDGET ALERTS ###########
 resource "aws_budgets_budget" "monthly" {
   name              = "auto-rmf-monthly-budget"
   budget_type       = "COST"
