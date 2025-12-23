@@ -13,15 +13,3 @@ variable "workload_account_id" {
   description = "Workload account ID"
   type        = string
 }
-
-variable "enable_evidence_collector" {
-  description = "Enable Lambda evidence collector (requires Lambda zip file)"
-  type        = bool
-  default     = false
-}
-
-variable "enable_config_aggregator" {
-  description = "Enable Config aggregator (requires delegated admin)"
-  type        = bool
-  default     = false
-}
