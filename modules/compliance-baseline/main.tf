@@ -17,8 +17,6 @@ resource "aws_config_config_rule" "root_account_mfa_enabled" {
     owner             = "AWS"
     source_identifier = "ROOT_ACCOUNT_MFA_ENABLED"
   }
-
-  depends_on = [aws_config_configuration_recorder.main]
 }
 
 ########### AC-2: ACCOUNT MANAGEMENT - IAM PASSWORD POLICY ###########
@@ -39,8 +37,6 @@ resource "aws_config_config_rule" "iam_password_policy" {
     PasswordReusePrevention    = 24
     MaxPasswordAge             = 90
   })
-
-  depends_on = [aws_config_configuration_recorder.main]
 }
 
 ########### AC-2: ACCOUNT MANAGEMENT - IAM USER UNUSED CREDENTIALS ###########
@@ -55,8 +51,6 @@ resource "aws_config_config_rule" "iam_user_unused_credentials_check" {
   input_parameters = jsonencode({
     maxCredentialUsageAge = 90
   })
-
-  depends_on = [aws_config_configuration_recorder.main]
 }
 
 ########### AC-3: ACCESS ENFORCEMENT - IAM POLICY NO STATEMENTS WITH ADMIN ACCESS ###########
@@ -79,8 +73,6 @@ resource "aws_config_config_rule" "iam_no_inline_policy_check" {
     owner             = "AWS"
     source_identifier = "IAM_NO_INLINE_POLICY_CHECK"
   }
-
-  depends_on = [aws_config_configuration_recorder.main]
 }
 
 ##############################################################################
@@ -97,8 +89,6 @@ resource "aws_config_config_rule" "cloud_trail_enabled" {
     owner             = "AWS"
     source_identifier = "CLOUD_TRAIL_ENABLED"
   }
-
-  depends_on = [aws_config_configuration_recorder.main]
 }
 
 ########### AU-9: PROTECTION OF AUDIT INFORMATION - CLOUDTRAIL LOG FILE VALIDATION ###########
@@ -109,8 +99,6 @@ resource "aws_config_config_rule" "cloud_trail_log_file_validation_enabled" {
     owner             = "AWS"
     source_identifier = "CLOUD_TRAIL_LOG_FILE_VALIDATION_ENABLED"
   }
-
-  depends_on = [aws_config_configuration_recorder.main]
 }
 
 ########### AU-9: PROTECTION OF AUDIT INFORMATION - CLOUDTRAIL ENCRYPTION ###########
@@ -121,8 +109,6 @@ resource "aws_config_config_rule" "cloud_trail_encryption_enabled" {
     owner             = "AWS"
     source_identifier = "CLOUD_TRAIL_ENCRYPTION_ENABLED"
   }
-
-  depends_on = [aws_config_configuration_recorder.main]
 }
 
 ########### AU-12: AUDIT GENERATION - VPC FLOW LOGS ENABLED ###########
@@ -133,8 +119,6 @@ resource "aws_config_config_rule" "vpc_flow_logs_enabled" {
     owner             = "AWS"
     source_identifier = "VPC_FLOW_LOGS_ENABLED"
   }
-
-  depends_on = [aws_config_configuration_recorder.main]
 }
 
 ##############################################################################
@@ -151,8 +135,6 @@ resource "aws_config_config_rule" "ec2_instance_managed_by_systems_manager" {
     owner             = "AWS"
     source_identifier = "EC2_INSTANCE_MANAGED_BY_SSM"
   }
-
-  depends_on = [aws_config_configuration_recorder.main]
 }
 
 ########### CM-6: CONFIGURATION SETTINGS - EC2 INSTANCES IN VPC ###########
@@ -163,8 +145,6 @@ resource "aws_config_config_rule" "instances_in_vpc" {
     owner             = "AWS"
     source_identifier = "INSTANCES_IN_VPC"
   }
-
-  depends_on = [aws_config_configuration_recorder.main]
 }
 
 ########### CM-7: LEAST FUNCTIONALITY - EC2 SECURITY GROUP UNRESTRICTED SSH ###########
@@ -175,8 +155,6 @@ resource "aws_config_config_rule" "restricted_ssh" {
     owner             = "AWS"
     source_identifier = "INCOMING_SSH_DISABLED"
   }
-
-  depends_on = [aws_config_configuration_recorder.main]
 }
 
 ########### CM-7: LEAST FUNCTIONALITY - EC2 SECURITY GROUP UNRESTRICTED COMMON PORTS ###########
@@ -187,8 +165,6 @@ resource "aws_config_config_rule" "vpc_sg_open_only_to_authorized_ports" {
     owner             = "AWS"
     source_identifier = "VPC_SG_OPEN_ONLY_TO_AUTHORIZED_PORTS"
   }
-
-  depends_on = [aws_config_configuration_recorder.main]
 }
 
 ##############################################################################
@@ -205,8 +181,6 @@ resource "aws_config_config_rule" "mfa_enabled_for_iam_console_access" {
     owner             = "AWS"
     source_identifier = "MFA_ENABLED_FOR_IAM_CONSOLE_ACCESS"
   }
-
-  depends_on = [aws_config_configuration_recorder.main]
 }
 
 ########### IA-5: AUTHENTICATOR MANAGEMENT - IAM USER NO POLICIES CHECK ###########
@@ -217,8 +191,6 @@ resource "aws_config_config_rule" "iam_user_no_policies_check" {
     owner             = "AWS"
     source_identifier = "IAM_USER_NO_POLICIES_CHECK"
   }
-
-  depends_on = [aws_config_configuration_recorder.main]
 }
 
 ########### IA-5: AUTHENTICATOR MANAGEMENT - ACCESS KEYS ROTATED ###########
@@ -233,8 +205,6 @@ resource "aws_config_config_rule" "access_keys_rotated" {
   input_parameters = jsonencode({
     maxAccessKeyAge = 90
   })
-
-  depends_on = [aws_config_configuration_recorder.main]
 }
 
 ##############################################################################
@@ -251,8 +221,6 @@ resource "aws_config_config_rule" "vpc_default_security_group_closed" {
     owner             = "AWS"
     source_identifier = "VPC_DEFAULT_SECURITY_GROUP_CLOSED"
   }
-
-  depends_on = [aws_config_configuration_recorder.main]
 }
 
 ########### SC-8: TRANSMISSION CONFIDENTIALITY - S3 BUCKET SSL REQUESTS ONLY ###########
@@ -263,8 +231,6 @@ resource "aws_config_config_rule" "s3_bucket_ssl_requests_only" {
     owner             = "AWS"
     source_identifier = "S3_BUCKET_SSL_REQUESTS_ONLY"
   }
-
-  depends_on = [aws_config_configuration_recorder.main]
 }
 
 ########### SC-12: CRYPTOGRAPHIC KEY MANAGEMENT - KMS CMK NOT SCHEDULED FOR DELETION ###########
@@ -275,8 +241,6 @@ resource "aws_config_config_rule" "cmk_backing_key_rotation_enabled" {
     owner             = "AWS"
     source_identifier = "CMK_BACKING_KEY_ROTATION_ENABLED"
   }
-
-  depends_on = [aws_config_configuration_recorder.main]
 }
 
 ########### SC-13: CRYPTOGRAPHIC PROTECTION - S3 BUCKET SERVER SIDE ENCRYPTION ENABLED ###########
@@ -287,8 +251,6 @@ resource "aws_config_config_rule" "s3_bucket_server_side_encryption_enabled" {
     owner             = "AWS"
     source_identifier = "S3_BUCKET_SERVER_SIDE_ENCRYPTION_ENABLED"
   }
-
-  depends_on = [aws_config_configuration_recorder.main]
 }
 
 ########### SC-13: CRYPTOGRAPHIC PROTECTION - RDS STORAGE ENCRYPTED ###########
@@ -299,8 +261,6 @@ resource "aws_config_config_rule" "rds_storage_encrypted" {
     owner             = "AWS"
     source_identifier = "RDS_STORAGE_ENCRYPTED"
   }
-
-  depends_on = [aws_config_configuration_recorder.main]
 }
 
 ########### SC-13: CRYPTOGRAPHIC PROTECTION - EBS ENCRYPTION BY DEFAULT ###########
@@ -311,8 +271,6 @@ resource "aws_config_config_rule" "ec2_ebs_encryption_by_default" {
     owner             = "AWS"
     source_identifier = "EC2_EBS_ENCRYPTION_BY_DEFAULT"
   }
-
-  depends_on = [aws_config_configuration_recorder.main]
 }
 
 ########### SC-28: PROTECTION OF INFORMATION AT REST - ENCRYPTED VOLUMES ###########
@@ -323,8 +281,6 @@ resource "aws_config_config_rule" "encrypted_volumes" {
     owner             = "AWS"
     source_identifier = "ENCRYPTED_VOLUMES"
   }
-
-  depends_on = [aws_config_configuration_recorder.main]
 }
 
 ##############################################################################
