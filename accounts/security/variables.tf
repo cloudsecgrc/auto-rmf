@@ -42,5 +42,5 @@ variable "enable_evidence_collector" {
 variable "enable_config_aggregator" {
   description = "Enable Config aggregator"
   type        = bool
-  default     = false
+  default     = true
 }
