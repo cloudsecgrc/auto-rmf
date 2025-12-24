@@ -9,7 +9,7 @@ terraform {
     }
   }
 
-########### BACKEND ###########
+  ########### BACKEND ###########
   backend "s3" {
     bucket         = "auto-rmf-terraform-state"
     key            = "workload/terraform.tfstate"
@@ -35,11 +35,11 @@ provider "aws" {
 
 ########### LOCAL VARIABLES ###########
 locals {
-  vpc_cidr              = "10.0.0.0/16"
-  public_subnet_cidr    = "10.0.1.0/24"
+  vpc_cidr                = "10.0.0.0/16"
+  public_subnet_cidr      = "10.0.1.0/24"
   app_private_subnet_cidr = "10.0.2.0/24"
   db_private_subnet_cidr  = "10.0.3.0/24"
-  vpc_flow_logs_bucket  = "auto-rmf-vpc-flow-logs"
+  vpc_flow_logs_bucket    = "auto-rmf-vpc-flow-logs"
 }
 
 ##############################################################################

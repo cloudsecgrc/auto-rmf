@@ -441,36 +441,36 @@ resource "aws_s3_bucket_public_access_block" "evidence" {
 }
 
 ########### S3 BUCKET POLICY - EVIDENCE ###########
-resource "aws_s3_bucket_policy" "evidence" {
-  bucket = aws_s3_bucket.evidence.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Sid    = "AllowSecurityAccountLambdaWrite"
-        Effect = "Allow"
-        Principal = {
-          AWS = "arn:aws:iam::${var.security_account_id}:role/LambdaEvidenceCollectorRole"
-        }
-        Action = [
-          "s3:PutObject",
-          "s3:GetObject"
-        ]
-        Resource = "${aws_s3_bucket.evidence.arn}/*"
-      },
-      {
-        Sid    = "AllowSecurityAccountListBucket"
-        Effect = "Allow"
-        Principal = {
-          AWS = "arn:aws:iam::${var.security_account_id}:role/LambdaEvidenceCollectorRole"
-        }
-        Action   = "s3:ListBucket"
-        Resource = aws_s3_bucket.evidence.arn
-      }
-    ]
-  })
-}
+# resource "aws_s3_bucket_policy" "evidence" {
+#  bucket = aws_s3_bucket.evidence.id
+#
+#  policy = jsonencode({
+#    Version = "2012-10-17"
+#    Statement = [
+#      {
+#        Sid    = "AllowSecurityAccountLambdaWrite"
+#        Effect = "Allow"
+#        Principal = {
+#          AWS = "arn:aws:iam::${var.security_account_id}:role/LambdaEvidenceCollectorRole"
+#        }
+#        Action = [
+#          "s3:PutObject",
+#          "s3:GetObject"
+#        ]
+#        Resource = "${aws_s3_bucket.evidence.arn}/*"
+#      },
+#      {
+#        Sid    = "AllowSecurityAccountListBucket"
+#        Effect = "Allow"
+#        Principal = {
+#          AWS = "arn:aws:iam::${var.security_account_id}:role/LambdaEvidenceCollectorRole"
+#        }
+#        Action   = "s3:ListBucket"
+#        Resource = aws_s3_bucket.evidence.arn
+#      }
+#    ]
+#  })
+#}
 
 ##############################################################################
 ##############################################################################

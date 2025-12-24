@@ -29,13 +29,13 @@ resource "aws_config_config_rule" "iam_password_policy" {
   }
 
   input_parameters = jsonencode({
-    RequireUppercaseCharacters = true
-    RequireLowercaseCharacters = true
-    RequireSymbols             = true
-    RequireNumbers             = true
-    MinimumPasswordLength      = 14
-    PasswordReusePrevention    = 24
-    MaxPasswordAge             = 90
+    RequireUppercaseCharacters = "true"
+    RequireLowercaseCharacters = "true"
+    RequireSymbols             = "true"
+    RequireNumbers             = "true"
+    MinimumPasswordLength      = "14"
+    PasswordReusePrevention    = "24"
+    MaxPasswordAge             = "90"
   })
 }
 
@@ -49,7 +49,7 @@ resource "aws_config_config_rule" "iam_user_unused_credentials_check" {
   }
 
   input_parameters = jsonencode({
-    maxCredentialUsageAge = 90
+    maxCredentialUsageAge = "90"
   })
 }
 
@@ -201,7 +201,7 @@ resource "aws_config_config_rule" "access_keys_rotated" {
   }
 
   input_parameters = jsonencode({
-    maxAccessKeyAge = 90
+    maxAccessKeyAge = "90"
   })
 }
 

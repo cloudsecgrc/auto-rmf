@@ -1,49 +1,100 @@
+########### VPC OUTPUTS ###########
 output "vpc_id" {
   description = "VPC ID"
   value       = aws_vpc.main.id
 }
 
-output "public_subnet_ids" {
-  description = "Public subnet IDs"
-  value       = [aws_subnet.public_1a.id, aws_subnet.public_1b.id]
+output "vpc_cidr" {
+  description = "VPC CIDR block"
+  value       = aws_vpc.main.cidr_block
 }
 
-output "app_subnet_ids" {
-  description = "Application subnet IDs"
-  value       = [aws_subnet.app_1a.id, aws_subnet.app_1b.id]
+output "internet_gateway_id" {
+  description = "Internet Gateway ID"
+  value       = aws_internet_gateway.main.id
 }
 
-output "database_subnet_ids" {
-  description = "Database subnet IDs"
-  value       = [aws_subnet.database_1a.id, aws_subnet.database_1b.id]
+########### SUBNET OUTPUTS ###########
+output "public_subnet_id" {
+  description = "Public subnet ID"
+  value       = aws_subnet.public.id
 }
 
-output "alb_dns_name" {
-  description = "Application Load Balancer DNS name"
-  value       = aws_lb.main.dns_name
+output "public_subnet_cidr" {
+  description = "Public subnet CIDR"
+  value       = aws_subnet.public.cidr_block
 }
 
-output "alb_arn" {
-  description = "Application Load Balancer ARN"
-  value       = aws_lb.main.arn
+output "app_private_subnet_id" {
+  description = "Application private subnet ID"
+  value       = aws_subnet.app_private.id
 }
 
-output "waf_web_acl_arn" {
-  description = "WAF Web ACL ARN"
-  value       = aws_wafv2_web_acl.main.arn
+output "app_private_subnet_cidr" {
+  description = "Application private subnet CIDR"
+  value       = aws_subnet.app_private.cidr_block
 }
 
-output "alb_security_group_id" {
-  description = "ALB Security Group ID"
-  value       = aws_security_group.alb.id
+output "db_private_subnet_id" {
+  description = "Database private subnet ID"
+  value       = aws_subnet.db_private.id
 }
 
-output "app_security_group_id" {
-  description = "Application Security Group ID"
-  value       = aws_security_group.app.id
+output "db_private_subnet_cidr" {
+  description = "Database private subnet CIDR"
+  value       = aws_subnet.db_private.cidr_block
 }
 
-output "database_security_group_id" {
-  description = "Database Security Group ID"
-  value       = aws_security_group.database.id
+########### ROUTE TABLE OUTPUTS ###########
+output "public_route_table_id" {
+  description = "Public route table ID"
+  value       = aws_route_table.public.id
+}
+
+output "app_private_route_table_id" {
+  description = "Application private route table ID"
+  value       = aws_route_table.app_private.id
+}
+
+output "db_private_route_table_id" {
+  description = "Database private route table ID"
+  value       = aws_route_table.db_private.id
+}
+
+########### NETWORK ACL OUTPUTS ###########
+output "public_nacl_id" {
+  description = "Public NACL ID"
+  value       = aws_network_acl.public.id
+}
+
+output "app_private_nacl_id" {
+  description = "Application private NACL ID"
+  value       = aws_network_acl.app_private.id
+}
+
+output "db_private_nacl_id" {
+  description = "Database private NACL ID"
+  value       = aws_network_acl.db_private.id
+}
+
+########### SECURITY GROUP OUTPUTS ###########
+output "web_tier_sg_id" {
+  description = "Web tier security group ID"
+  value       = aws_security_group.web_tier.id
+}
+
+output "app_tier_sg_id" {
+  description = "Application tier security group ID"
+  value       = aws_security_group.app_tier.id
+}
+
+output "db_tier_sg_id" {
+  description = "Database tier security group ID"
+  value       = aws_security_group.db_tier.id
+}
+
+########### VPC FLOW LOGS OUTPUT ###########
+output "vpc_flow_log_id" {
+  description = "VPC Flow Log ID"
+  value       = aws_flow_log.main.id
 }
