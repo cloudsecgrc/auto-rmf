@@ -96,13 +96,18 @@ resource "aws_kms_key" "s3_logging" {
         Sid    = "Allow VPC Flow Logs"
         Effect = "Allow"
         Principal = {
-          Service = "vpc-flow-logs.amazonaws.com"
+          Service = "delivery.logs.amazonaws.com"
         }
         Action = [
           "kms:GenerateDataKey*",
           "kms:Decrypt"
         ]
         Resource = "*"
+        Condition = {
+          StringEquals = {
+            "aws:SourceAccount" = var.workload_account_id
+          }
+        }
       }
     ]
   })
