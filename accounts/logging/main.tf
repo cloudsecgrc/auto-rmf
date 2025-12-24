@@ -446,7 +446,7 @@ resource "aws_s3_bucket_public_access_block" "evidence" {
 }
 
 ########### S3 BUCKET POLICY - EVIDENCE ###########
- resource "aws_s3_bucket_policy" "evidence" {
+resource "aws_s3_bucket_policy" "evidence" {
   bucket = aws_s3_bucket.evidence.id
 
   policy = jsonencode({
