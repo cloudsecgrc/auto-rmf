@@ -9,7 +9,7 @@ terraform {
     }
   }
 
-########### BACKEND ###########
+  ########### BACKEND ###########
   backend "s3" {
     bucket         = "auto-rmf-terraform-state"
     key            = "logging/terraform.tfstate"

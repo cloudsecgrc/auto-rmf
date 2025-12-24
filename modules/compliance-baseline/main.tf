@@ -61,8 +61,6 @@ resource "aws_config_config_rule" "iam_policy_no_statements_with_admin_access" {
     owner             = "AWS"
     source_identifier = "IAM_POLICY_NO_STATEMENTS_WITH_ADMIN_ACCESS"
   }
-
-  depends_on = [aws_config_configuration_recorder.main]
 }
 
 ########### AC-6: LEAST PRIVILEGE - IAM NO INLINE POLICY CHECK ###########
