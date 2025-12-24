@@ -315,7 +315,7 @@ resource "aws_cloudwatch_event_target" "config_noncompliant" {
 ########### SECURITY HUB ORGANIZATION ADMIN ENABLEMENT ###########
 resource "aws_securityhub_organization_admin_account" "main" {
   admin_account_id = var.security_account_id
-  
+
   depends_on = [
     module.security_services
   ]
@@ -325,11 +325,11 @@ resource "aws_securityhub_organization_admin_account" "main" {
 resource "aws_securityhub_organization_configuration" "main" {
   auto_enable           = true
   auto_enable_standards = "DEFAULT"
-  
+
   organization_configuration {
     configuration_type = "CENTRAL"
   }
-  
+
   depends_on = [
     aws_securityhub_organization_admin_account.main
   ]
