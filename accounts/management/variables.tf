@@ -8,27 +8,20 @@ variable "management_account_id" {
   type        = string
 }
 
-variable "logging_account_id" {
-  description = "Logging account ID"
-  type        = string
-}
-
 variable "security_account_id" {
-  description = "Security account ID"
+  description = "Security account ID for delegated admin"
   type        = string
 }
 
-variable "workload_account_id" {
-  description = "Workload account ID"
+variable "cloudtrail_bucket_name" {
+  description = "S3 bucket name for CloudTrail logs (exists in logging account)"
   type        = string
 }
 
-variable "organization_id" {
-  description = "AWS Organization ID"
-  type        = string
+variable "auto-rmf-org-aggregator" {
+  description = "org account"
 }
-
 variable "alert_email" {
-  description = "Email address for security alerts"
+  description = "Email address for budget and security alerts"
   type        = string
 }

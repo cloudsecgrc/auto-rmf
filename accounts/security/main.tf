@@ -312,6 +312,15 @@ resource "aws_cloudwatch_event_target" "config_noncompliant" {
 ##############################################################################
 ##############################################################################
 
+########### SECURITY HUB FINDING AGGREGATOR ###########
+resource "aws_securityhub_finding_aggregator" "main" {
+  linking_mode = "ALL_REGIONS"
+
+  depends_on = [
+    module.security_services
+  ]
+}
+
 ########### SECURITY HUB ORGANIZATION CONFIGURATION ###########
 resource "aws_securityhub_organization_configuration" "main" {
   auto_enable           = true
@@ -322,7 +331,7 @@ resource "aws_securityhub_organization_configuration" "main" {
   }
 
   depends_on = [
-    module.security_services
+    aws_securityhub_finding_aggregator.main
   ]
 }
 
