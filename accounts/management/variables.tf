@@ -13,11 +13,6 @@ variable "security_account_id" {
   type        = string
 }
 
-variable "cloudtrail_bucket_name" {
-  description = "S3 bucket name for CloudTrail logs (exists in logging account)"
-  type        = string
-}
-
 variable "alert_email" {
   description = "Email address for budget and security alerts"
   type        = string
