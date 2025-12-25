@@ -323,8 +323,7 @@ resource "aws_securityhub_finding_aggregator" "main" {
 
 ########### SECURITY HUB ORGANIZATION CONFIGURATION ###########
 resource "aws_securityhub_organization_configuration" "main" {
-  auto_enable           = true
-  auto_enable_standards = "DEFAULT"
+  auto_enable = false
 
   organization_configuration {
     configuration_type = "CENTRAL"
