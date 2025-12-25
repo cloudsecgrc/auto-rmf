@@ -18,11 +18,6 @@ variable "cloudtrail_bucket_name" {
   type        = string
 }
 
-variable "auto-rmf-org-aggregator" {
-  description = "org account"
-  type        = string
-}
-
 variable "alert_email" {
   description = "Email address for budget and security alerts"
   type        = string
