@@ -1,6 +1,5 @@
 name: AUTO-RMF Terraform Destroy
 
-
 on:
   workflow_dispatch:  # Manual trigger only
     inputs:
